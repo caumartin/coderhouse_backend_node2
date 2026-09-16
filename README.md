@@ -2,7 +2,7 @@ PROYECTO BACKEND EVENTOS
 
 PreEntrega 1
 
-Node JS + Mongo DB
+Tecnología: Node JS + Mongo DB
 
 Dependencias:
 
@@ -13,3 +13,8 @@ Dotenv
 Variables de entorno en archivo .env
 
 Ejecutar con npm run start
+
+Rutas desplegadas:
+
+/health
+/api/events

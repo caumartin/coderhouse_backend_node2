@@ -1,5 +1,5 @@
 export async function getAllEvents (req, res, next) {
-
+    res.status(200).json({ status: 'success', payload: [] });
 }
 
 export async function getEventById (req, res, next) {
