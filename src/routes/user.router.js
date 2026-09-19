@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getAllUsers, getUserByEmail, updateUser } from '../controllers/user.controller.js';
+import { getAllUsersController, getUserByEmailController, updateUserController } from '../controllers/user.controller.js';
 
 const router = Router();
 
-router.get('/', getAllUsers);
-router.get('/:email', getUserByEmail);
+router.get('/', getAllUsersController);
+router.get('/:email', getUserByEmailController);
 
-router.put('/:email', updateUser);
+router.put('/:email', updateUserController);
 
 export default router;

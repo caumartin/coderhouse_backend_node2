@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getAllTickets, getTicketById, purchaseTicket } from '../controllers/ticket.controller.js';
+import { getAllTicketsController, getTicketByIdController, purchaseTicketController } from '../controllers/ticket.controller.js';
 
 const router = Router();
 
-router.get('/', getAllTickets);
-router.get('/:tid', getTicketById);
+router.get('/', getAllTicketsController);
+router.get('/:tid', getTicketByIdController);
 
-router.post('/:uid/:eid', purchaseTicket);
+router.post('/:uid/:eid', purchaseTicketController);
 
 export default router;
