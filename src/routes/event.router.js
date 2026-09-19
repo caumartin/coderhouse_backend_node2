@@ -4,11 +4,11 @@ import { getAllEventsController, getEventByIdController, createEventController, 
 const router = Router();
 
 router.get('/', getAllEventsController);
-router.get('/:eid', getEventByIdController);
+router.get('/:eventId', getEventByIdController);
 
 router.post('/', createEventController);
-router.put('/:eid', updateEventController);
-router.delete('/:eid', deleteEventController);
+router.put('/:eventId', updateEventController);
+router.delete('/:eventId', deleteEventController);
 
 
 export default router;

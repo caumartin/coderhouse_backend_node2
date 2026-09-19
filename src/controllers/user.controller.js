@@ -10,7 +10,7 @@ export async function getAllUsersController (req, res, next) {
         });
     }
     catch (error) {
-        res.status(400).json({ status: 'error', payload: [] })
+        res.status(400).json({ status: 'error', message: 'Error al obtener los usuarios' })
     }
 }
 
@@ -25,15 +25,18 @@ export async function getUserByEmailController (req, res, next) {
         });
     }
     catch (error) {
-        res.status(400).json({ status: 'error', payload: [] })
+        if (error.message === 'Usuario no encontrado') {
+            res.status(404).json({ status: 'error', message: 'Usuario no encontrado' });
+        } 
+        else res.status(400).json({ status: 'error', message: 'Error al obtener el usuario' })
     }
 }
 
 export async function updateUserController (req, res, next) {
     try {
         const { email } = req.params;
-        const { first_name, last_name } = req.body;
-        const user = await updateUserService(email, { first_name, last_name });
+        const { role } = req.body;
+        const user = await updateUserService(email, { role });
         res.status(200).json({
             status: 'success',
             message: 'Usuario actualizado exitosamente',
@@ -41,6 +44,9 @@ export async function updateUserController (req, res, next) {
         });
     }
     catch (error) {
-        res.status(400).json({ status: 'error', payload: [] })
+        if (error.message === 'Usuario no encontrado') {
+            res.status(404).json({ status: 'error', message: 'Usuario no encontrado' });
+        }
+        else res.status(400).json({ status: 'error', payload: [] })
     }
 }

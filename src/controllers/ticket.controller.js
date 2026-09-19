@@ -10,14 +10,19 @@ export async function getAllTicketsController (req, res, next) {
         });
     }
     catch (error) {
-        res.status(400).json({ status: 'error', payload: [] })
+        if (error.message === 'No se encontraron tickets') {
+            res.status(404).json({ status: 'error', message: 'No se encontraron tickets' });
+        }
+        else {
+            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+        }
     }
 }
 
 export async function getTicketByIdController (req, res, next) {
     try {
-        const { id } = req.params;
-        const ticket = await getTicketByIdService(id);
+        const { ticketId } = req.params;
+        const ticket = await getTicketByIdService(ticketId);
         res.status(200).json({
             status: 'success',
             message: 'Ticket obtenido exitosamente',
@@ -25,13 +30,18 @@ export async function getTicketByIdController (req, res, next) {
         });
     }
     catch (error) {
-        res.status(400).json({ status: 'error', payload: [] })
+        if (error.message === 'Ticket no encontrado') {
+            res.status(404).json({ status: 'error', message: 'Ticket no encontrado' });
+        }
+        else {
+            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+        }
     }
 }
 
 export async function purchaseTicketController (req, res, next) {
     try {
-        const { userId, eventId } = req.body;
+        const { userId, eventId } = req.params;
         const ticket = await purchaseTicketService(userId, eventId);
         res.status(201).json({
             status: 'success',
@@ -40,6 +50,11 @@ export async function purchaseTicketController (req, res, next) {
         });
     }
     catch (error) {
-        res.status(400).json({ status: 'error', payload: [] })
+        if (error.message === 'Ticket no encontrado') {
+            res.status(404).json({ status: 'error', message: 'Ticket no encontrado' });
+        }
+        else {
+            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+        }
     }
 }

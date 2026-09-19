@@ -4,8 +4,8 @@ import { getAllTicketsController, getTicketByIdController, purchaseTicketControl
 const router = Router();
 
 router.get('/', getAllTicketsController);
-router.get('/:tid', getTicketByIdController);
+router.get('/:ticketId', getTicketByIdController);
 
-router.post('/:uid/:eid', purchaseTicketController);
+router.post('/:userId/:eventId', purchaseTicketController);
 
 export default router;
