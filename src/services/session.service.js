@@ -26,7 +26,7 @@ export async function registerService(userData) {
         throw new Error('La contraseña debe tener al menos 6 caracteres');
     }
 
-    const hashedPassword = hashPassword(password);
+    const hashedPassword = await hashPassword(password);
 
     // Si no hay errores, crear el nuevo usuario
     const newUser = await userModel.create({

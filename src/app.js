@@ -7,11 +7,14 @@ import sessionRouter from './routes/session.router.js';
 
 const app = express();
 
+app.use(express.json());
+
 app.use('/', rootRouter);
 app.use('/api/users', userRouter);
 app.use('/api/tickets', ticketRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/sessions', sessionRouter);
+
 
 export default app;
 
