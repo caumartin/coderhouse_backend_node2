@@ -50,8 +50,8 @@ export async function purchaseTicketController (req, res, next) {
         });
     }
     catch (error) {
-        if (error.message === 'Ticket no encontrado') {
-            res.status(404).json({ status: 'error', message: 'Ticket no encontrado' });
+        if (error.message === 'Faltan datos para comprar el ticket' || error.message === 'Usuario no encontrado' || error.message === 'Evento no encontrado' || error.message === 'El evento no está activo') {
+            res.status(400).json({ status: 'error', message: error.message });
         }
         else {
             res.status(500).json({ status: 'error', message: 'Error interno del servidor' });

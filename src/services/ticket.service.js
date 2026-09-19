@@ -1,4 +1,6 @@
 import { ticketModel } from '../models/ticket.model.js';
+import { eventModel } from '../models/event.model.js';
+import { userModel } from '../models/user.model.js';
 
 export async function getAllTicketsService () {
     try {
@@ -39,7 +41,18 @@ export async function purchaseTicketService (userId, eventId) {
         if (!eventExists) {
             throw new Error('Evento no encontrado');
         }
+        const event = eventExists.toObject();
+        if (!event.status) {
+            throw new Error('El evento no está activo');
+        }
+
         const newTicket = await ticketModel.create({ user: userId, event: eventId });
+
+        const updatedEvent = await eventModel.findByIdAndUpdate(eventId, { $inc: { available_tickets: -1 } }, { returnDocument: 'after' });
+        const upEvent = updatedEvent.toObject();
+        if (upEvent.available_tickets === 0) {
+            await eventModel.findByIdAndUpdate(eventId, { status: false });
+        }
         return newTicket;
     }
     catch (error) {

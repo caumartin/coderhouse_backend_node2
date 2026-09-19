@@ -9,11 +9,11 @@ const eventSchema = new Schema({
     type: Date,
     required: true,
   },
-    place: {
+    city: {
     type: String,
     required: true,
   },
-    capacity: {
+    available_tickets: {
     type: Number,
     required: true,
   },

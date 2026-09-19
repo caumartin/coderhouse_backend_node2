@@ -14,9 +14,12 @@ export async function registerService(userData) {
     if (!emailRegex.test(email)) {
         throw new Error('Formato de correo electrónico inválido');
     }
-
+    
+    // Normalizar correo electrónico (convertir a minúsculas y eliminar espacios)
+    const normalizedEmail = email.toLowerCase().trim()
+    
     // Verificar si el correo ya ya está registrado
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await userModel.findOne({ email: normalizedEmail });
     if (existingUser) {
         throw new Error('El correo electrónico ya está registrado');
     }
@@ -32,7 +35,7 @@ export async function registerService(userData) {
     const newUser = await userModel.create({
         first_name,
         last_name,
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         role: "user"
     });
