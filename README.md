@@ -1,7 +1,9 @@
 PROYECTO BACKEND EVENTOS
 
+PreEntrega 4 (commit v1.10)
 
-PreEntrega 3
+
+PreEntrega 3 (commit v1.07)
 
 Tecnología: Node JS + Mongo DB + JWT
 
