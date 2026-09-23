@@ -1,69 +1,44 @@
-import { registerService, loginService } from '../services/session.service.js';
-import { generateToken, verifyToken } from '../utils/jwt.js';
+import { generateToken } from '../utils/jwt.js';
 import { env } from '../config/env.js';
 
 
 export async function registerController (req, res) {
-    try {
-        const user = await registerService(req.body);
-        res.status(201).json({
-            status: 'success',
-            message: 'Usuario registrado exitosamente',
-            data: user
-        });
+    res.status(201).json({
+        status: 'success',
+        message: 'Usuario registrado exitosamente',
+        payload: {
+            id: req.user._id,
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            email: req.user.email,
+            role: req.user.role
+        }
+    });
     }
-    catch (error) {
-        if (error.message === 'Todos los campos son obligatorios' ||
-            error.message === 'Formato de correo electrónico inválido' ||
-            error.message === 'La contraseña debe tener al menos 6 caracteres'
-        ) {
-            res.status(400).json({
-                status: 'error',
-                message: error.message
-            });
-        }
-        else if (error.message === 'El correo electrónico ya está registrado') {
-            res.status(409).json({
-                status: 'error',
-                message: error.message
-            });
-        }
-        else {
-            res.status(500).json({
-                status: 'error',
-                message: 'Error interno del servidor'
-            });
-        }
-    }
-}
+
 
 export async function loginController (req, res, next) {
-    try {
-        const user = await loginService(req.body);
-        const token = generateToken(user);
-        let options;
-        if ( env.NODE_ENV == 'production' ) {
-            options = { httpOnly: true, sameSite: 'lax', maxAge: 3600000, signed: true, secure: true }
-        } else {
-            options = { httpOnly: true, sameSite: 'lax', maxAge: 3600000, signed: true }
-        }
-        res.status(200)
-           .cookie('currentUser', token, options)
-           .json({
-            status: 'success',
-            message: 'Inicio de sesión exitoso',
-            data: user
-        });
+    const tokenUser = {
+        id: req.user._id,
+        email: req.user.email,
+        role: req.user.role
     }
-    catch (error) {
-        res.status(400).json({
-            status: 'error',
-            message: error.message
-        });
-    }
+    const token = generateToken(tokenUser);
+    res.status(200)
+        .cookie('currentUser', token, {
+            httpOnly: true,
+            sameSite: 'lax',
+            maxAge: 3600000,
+            signed: true,
+            secure: env.NODE_ENV === 'production'})
+        .json({
+        status: 'success',
+        message: 'Inicio de sesión exitoso',
+        payload: tokenUser
+    });
 }
 
-
+    
 export async function logoutController (req, res, next) {
     try {
         res.status(200).clearCookie('currentUser').json({
@@ -81,14 +56,14 @@ export async function logoutController (req, res, next) {
 
 
 export async function currentUserController (req, res, next) {
-    try {
-        const user = verifyToken(req.signedCookies.currentUser);
-        res.status(200).json(user);
-    }
-    catch (error) {
-        res.status(401).json({
-            status: error.message,
-            message: 'Sesión expirada o no iniciada. Por favor, inicia sesión nuevamente.'
-        });
-    }
+    res.status(200).json({
+        status: 'success',
+        payload: {
+            id: req.user._id,
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            email: req.user.email,
+            role: req.user.role
+        }
+    });
 }
