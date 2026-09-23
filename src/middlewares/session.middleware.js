@@ -1,5 +1,5 @@
 export function ensureSession(req, res, next) {
-    if (req.signedCookies.token) {
+    if (req.signedCookies.currentUser) {
         next();
     } else {
         res.status(401).json({

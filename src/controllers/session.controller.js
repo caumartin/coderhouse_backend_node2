@@ -1,5 +1,6 @@
 import { registerService, loginService } from '../services/session.service.js';
 import { generateToken, verifyToken } from '../utils/jwt.js';
+import { env } from '../config/env.js';
 
 
 export async function registerController (req, res) {
@@ -39,9 +40,15 @@ export async function registerController (req, res) {
 export async function loginController (req, res, next) {
     try {
         const user = await loginService(req.body);
-        const token = generateToken(user.toJSON());
+        const token = generateToken(user);
+        let options;
+        if ( env.NODE_ENV == 'production' ) {
+            options = { httpOnly: true, sameSite: 'lax', maxAge: 3600000, signed: true, secure: true }
+        } else {
+            options = { httpOnly: true, sameSite: 'lax', maxAge: 3600000, signed: true }
+        }
         res.status(200)
-           .cookie('token', token, { httpOnly: true, maxAge: 60 * 1000, signed: true })
+           .cookie('currentUser', token, options)
            .json({
             status: 'success',
             message: 'Inicio de sesión exitoso',
@@ -59,7 +66,7 @@ export async function loginController (req, res, next) {
 
 export async function logoutController (req, res, next) {
     try {
-        res.status(200).clearCookie('token').json({
+        res.status(200).clearCookie('currentUser').json({
             status: 'success',
             message: 'Cierre de sesión exitoso'
         });
@@ -75,12 +82,12 @@ export async function logoutController (req, res, next) {
 
 export async function currentUserController (req, res, next) {
     try {
-        const user = verifyToken(req.signedCookies.token);
+        const user = verifyToken(req.signedCookies.currentUser);
         res.status(200).json(user);
     }
     catch (error) {
         res.status(401).json({
-            status: 'error',
+            status: error.message,
             message: 'Sesión expirada o no iniciada. Por favor, inicia sesión nuevamente.'
         });
     }

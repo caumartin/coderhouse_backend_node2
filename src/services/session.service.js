@@ -42,7 +42,7 @@ export async function registerService(userData) {
 
     // Responder al controller
     const userResponse = newUser.toObject();
-    delete userResponse.password; // Eliminar la contraseña de la respuesta
+    delete userResponse.password;
     return userResponse;
 
 }
@@ -62,5 +62,9 @@ export async function loginService(userData) {
         throw new Error('Credenciales inválidas');
     }
 
-    return user;
+    // Responder al controller
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    delete userResponse._id;
+    return userResponse;
 }
