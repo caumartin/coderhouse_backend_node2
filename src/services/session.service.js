@@ -1,5 +1,5 @@
 import { userModel } from '../models/user.model.js';
-import { hashPassword } from '../utils/hash.js';
+import { hashPassword, verifyPassword } from '../utils/hash.js';
 
 export async function registerService(userData) {
     const { first_name, last_name, email, password } = userData;
@@ -45,4 +45,22 @@ export async function registerService(userData) {
     delete userResponse.password; // Eliminar la contraseña de la respuesta
     return userResponse;
 
+}
+
+export async function loginService(userData) {
+    const { email, password } = userData;
+
+    const user = await userModel.findOne({ email: email.toLowerCase().trim() })
+
+    if (!user) {
+        throw new Error('Credenciales inválidas');
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    if (!(await verifyPassword(password, user.password))) {
+        throw new Error('Credenciales inválidas');
+    }
+
+    return user;
 }

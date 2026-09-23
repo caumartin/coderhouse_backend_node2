@@ -1,4 +1,6 @@
-import { registerService } from '../services/session.service.js';
+import { registerService, loginService } from '../services/session.service.js';
+import { generateToken, verifyToken } from '../utils/jwt.js';
+
 
 export async function registerController (req, res) {
     try {
@@ -31,5 +33,55 @@ export async function registerController (req, res) {
                 message: 'Error interno del servidor'
             });
         }
+    }
+}
+
+export async function loginController (req, res, next) {
+    try {
+        const user = await loginService(req.body);
+        const token = generateToken(user.toJSON());
+        res.status(200)
+           .cookie('token', token, { httpOnly: true, maxAge: 60 * 1000, signed: true })
+           .json({
+            status: 'success',
+            message: 'Inicio de sesión exitoso',
+            data: user
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+}
+
+
+export async function logoutController (req, res, next) {
+    try {
+        res.status(200).clearCookie('token').json({
+            status: 'success',
+            message: 'Cierre de sesión exitoso'
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+}
+
+
+export async function currentUserController (req, res, next) {
+    try {
+        const user = verifyToken(req.signedCookies.token);
+        res.status(200).json(user);
+    }
+    catch (error) {
+        res.status(401).json({
+            status: 'error',
+            message: 'Sesión expirada o no iniciada. Por favor, inicia sesión nuevamente.'
+        });
     }
 }
