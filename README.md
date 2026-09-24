@@ -2,10 +2,7 @@ PROYECTO BACKEND EVENTOS
 
 PreEntrega 4 (commit v1.10)
 
-
-PreEntrega 3 (commit v1.07)
-
-Tecnología: Node JS + Mongo DB + JWT
+Node JS + Mongo DB + JWT + Passport
 
 Dependencias:
 
@@ -13,6 +10,23 @@ Express
 Mongoose
 Dotenv
 JsonWebToken
+Bcrypt
+Passport
+Passport-local
+Passport-jwt
+
+
+PreEntrega 3 (commit v1.07)
+
+Node JS + Mongo DB + JWT
+
+Dependencias:
+
+Express
+Mongoose
+Dotenv
+JsonWebToken
+Bcrypt
 
 
 Variables de entorno en archivo .env.example
