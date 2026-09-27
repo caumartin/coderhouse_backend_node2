@@ -30,6 +30,10 @@ passport.use(
         }
 
         const normalizedEmail = email.toLowerCase().trim()
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(normalizedEmail)) {
+            return done(null, false, { message: 'Formato de correo electrónico inválido' });
+        }
 
         const userExists = await userModel.findOne({ email: normalizedEmail })
 
@@ -37,6 +41,9 @@ passport.use(
           return done(null, false, { message: 'Ya existe un usuario registrado con ese email' })
         }
 
+        if (password.length < 6) {
+            return done(null, false, { message: 'La contraseña debe tener al menos 6 caracteres' });
+        }
         const hashedPassword = await hashPassword(password)
 
         const newUser = await userModel.create({
