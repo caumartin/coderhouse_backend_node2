@@ -1,6 +1,6 @@
-PROYECTO BACKEND EVENTOS
+# PROYECTO BACKEND EVENTOS #
 
-PreEntrega 4 (commit v1.10)
+## PreEntrega 4 (commit v1.12) ##
 
 Node JS + Mongo DB + JWT + Passport
 
