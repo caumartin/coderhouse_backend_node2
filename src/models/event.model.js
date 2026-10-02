@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 
 const eventSchema = new Schema({
   name: {
@@ -24,6 +24,10 @@ const eventSchema = new Schema({
   status: {
     type: Boolean,
     required: true,
+  },
+  organizer: {
+    type: Types.ObjectId,
+    ref: "User"
   }
 });
 

@@ -2,7 +2,7 @@ import { eventModel } from '../models/event.model.js';
 
 export async function getAllEventsService () {
     try {
-        const allEvents = await eventModel.find();
+        const allEvents = await eventModel.find().populate("organizer");
         if (allEvents.length === 0) {
             throw new Error('No se encontraron eventos');
         }
@@ -15,7 +15,7 @@ export async function getAllEventsService () {
 
 export async function getEventByIdService (id) {
     try {
-        const event = await eventModel.findById(id);
+        const event = await eventModel.findById(id).populate("organizer");
         if (!event) {
             throw new Error('Evento no encontrado');
         }

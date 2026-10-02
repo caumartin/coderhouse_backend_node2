@@ -1,5 +1,38 @@
 # PROYECTO BACKEND EVENTOS #
 
+## PreEntrega 5 - ROLES (commit v1.14) ##
+
+Roles posibles: user (default) - organizer - admin
+
+### Matriz de permisos ###
+
+Acción	                              user	  organizer	  admin
+Consultar eventos publicados	        ✅	      ✅	        ✅
+Crear eventos	                        ❌      	✅	        ✅
+Modificar/cancelar eventos propios  	❌	      ✅        	✅
+Modificar cualquier evento          	❌	      ❌        	✅
+Ver todos los usuarios	              ❌      	❌        	✅
+
+### Rutas protegidas ###
+
+TODAS las rutas requieren de autenticación (login). En caso de login incorrecto devuelve 401.
+
+Algunas rutas requieren autorización (rol). En caso de rol distinto, devuelve 403.
+
+Solo accede admin:
+GET /api/users/
+GET /api/users/:email
+PUT /api/users/:email
+
+Solo admin y organizer:
+POST /api/events/
+
+Solo admin y organizer (organizer a los propios y admin a todos):
+PUT /api/events/:eventId
+DELETE /api/events/:eventId
+
+
+
 ## PreEntrega 4 (commit v1.12) ##
 
 Node JS + Mongo DB + JWT + Passport
