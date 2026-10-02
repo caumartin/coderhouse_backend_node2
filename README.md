@@ -1,17 +1,18 @@
 # PROYECTO BACKEND EVENTOS #
 
-## PreEntrega 5 - ROLES (commit v1.16) ##
+## PreEntrega 5 - ROLES (commit v1.17) ##
 
 Roles posibles: user (default) - organizer - admin
 
 ### Matriz de permisos ###
 
-Acción	                              user	  organizer	  admin  
-Consultar eventos publicados	        ✅	      ✅	        ✅  
-Crear eventos	                        ❌      	✅	        ✅  
-Modificar/cancelar eventos propios  	❌	      ✅        	✅  
-Modificar cualquier evento          	❌	      ❌        	✅  
-Ver todos los usuarios	              ❌      	❌        	✅  
+| Acción | user	| organizer | admin |
+| --- | --- | --- | --- |  
+| Consultar eventos publicados | ✅ | ✅ | ✅ |
+| Crear eventos	| ❌ | ✅	| ✅ |
+| Modificar/cancelar eventos propios | ❌ | ✅ | ✅ |
+| Modificar cualquier evento | ❌ | ❌ | ✅ |
+| Ver todos los usuarios | ❌ | ❌ | ✅ |
 
 ### Rutas protegidas ###
 
