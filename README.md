@@ -1,17 +1,17 @@
 # PROYECTO BACKEND EVENTOS #
 
-## PreEntrega 5 - ROLES (commit v1.15) ##
+## PreEntrega 5 - ROLES (commit v1.16) ##
 
 Roles posibles: user (default) - organizer - admin
 
 ### Matriz de permisos ###
 
-Acción	                              user	  organizer	  admin \n
-Consultar eventos publicados	        ✅	      ✅	        ✅ \n
-Crear eventos	                        ❌      	✅	        ✅ \n
-Modificar/cancelar eventos propios  	❌	      ✅        	✅ \n
-Modificar cualquier evento          	❌	      ❌        	✅ \n
-Ver todos los usuarios	              ❌      	❌        	✅ \n
+Acción	                              user	  organizer	  admin  
+Consultar eventos publicados	        ✅	      ✅	        ✅  
+Crear eventos	                        ❌      	✅	        ✅  
+Modificar/cancelar eventos propios  	❌	      ✅        	✅  
+Modificar cualquier evento          	❌	      ❌        	✅  
+Ver todos los usuarios	              ❌      	❌        	✅  
 
 ### Rutas protegidas ###
 
@@ -19,15 +19,15 @@ TODAS las rutas requieren de autenticación (login). En caso de login incorrecto
 
 Algunas rutas requieren autorización (rol). En caso de rol distinto, devuelve 403.
 
-Solo accede admin:
+Solo accede admin:  
 GET /api/users/
 GET /api/users/:email
 PUT /api/users/:email
 
-Solo admin y organizer:
+Solo admin y organizer:  
 POST /api/events/
 
-Solo admin y organizer (organizer a los propios y admin a todos):
+Solo admin y organizer (organizer a los propios y admin a todos):  
 PUT /api/events/:eventId
 DELETE /api/events/:eventId
 
@@ -39,14 +39,14 @@ Node JS + Mongo DB + JWT + Passport
 
 Dependencias:
 
-Express
-Mongoose
-Dotenv
-JsonWebToken
-Bcrypt
-Passport
-Passport-local
-Passport-jwt
+Express  
+Mongoose  
+Dotenv  
+JsonWebToken  
+Bcrypt  
+Passport  
+Passport-local  
+Passport-jwt  
 
 
 PreEntrega 3 (commit v1.07)
