@@ -2,7 +2,7 @@ import { getAllEventsService, getEventByIdService, createEventService, updateEve
 
 export async function getAllEventsController (req, res, next) {
     try {
-        const allEvents = await getAllEventsService(req.query);
+        const allEvents = await getAllEventsService(req.user, req.query);
         res.status(200).json({
             status: 'success',
             message: 'Eventos obtenidos exitosamente',
@@ -24,21 +24,11 @@ export async function getAllEventsController (req, res, next) {
         }
     }
 }
-//    res.json({
-//        status: 'success',
-//        payload: events,
-//        pagination: {
-//        total: totalEvents,
-//        page: pageNumber,
-//        limit: limitNumber,
-//        totalPages: Math.ceil(totalEvents / limitNumber)
-//        }
-//   })
 
 export async function getEventByIdController (req, res, next) {
     try {
         const { eventId } = req.params;
-        const event = await getEventByIdService(eventId);
+        const event = await getEventByIdService(req.user, eventId);
         res.status(200).json({
             status: 'success',
             message: 'Evento obtenido exitosamente',

@@ -1,5 +1,36 @@
 # PROYECTO BACKEND EVENTOS #
 
+## PreEntrega 6 - Entidad EVENT, reglas de negocio (commit v1.19) ##
+
+| Metodo | Ruta	| Acceso |  
+| --- | --- | --- |  
+| POST | /api/events | organizer, admin |  
+| GET | /api/events | publico |  
+| GET | /api/events/:eventId | publico |  
+| PUT | /api/events/:eventId | dueño del avento o admin |  
+| PATCH | /api/events/:eventId/status | dueño del avento o admin |  
+
+Filtra por igualda: status, category.
+Filtra por rango de fechas (dateFrom, dateTo)
+Filtra por semejanza: name, description, location
+Soporta paginación (page, limit)
+Soporta ordenamiento por fecha (sort=date o sort=-date)
+
+** Reglas de Negocio: **
+
+- campos obligatorios: name, description, category, date, location, capacity, price
+- status acepta solo valores definidos: draft, published, cancelled, finished (default draft)
+- capacity > 0; price≥ 0;
+- Un organizer no puede modificar eventos ajenos (sí puede admin)
+- Solo pueden modificarse eventos en estado borrador
+- El endpoint DELETE no "borra" eventos, los pasa a estado "cancelled"
+- No se permiten fechas pasadas al crear
+- Un evento en estado "draft" puede pasar a "published" o "cancelled"
+- Un evento en estado "published" puede pasar a "finished" o "cancelled"
+- Un evento en estado "finished" o "cancelled" no puede cambiar de estado
+- Los users solo pueden ver eventos con estado "published" o "finished"
+ 
+
 ## PreEntrega 5 - ROLES (commit v1.17) ##
 
 Roles posibles: user (default) - organizer - admin

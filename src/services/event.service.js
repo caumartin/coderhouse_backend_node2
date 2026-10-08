@@ -1,6 +1,6 @@
 import { eventModel } from '../models/event.model.js';
 
-export async function getAllEventsService (query) {
+export async function getAllEventsService (user, query) {
 
     const {
         category,
@@ -54,6 +54,10 @@ export async function getAllEventsService (query) {
         ]
     }
 
+    if (user.role === 'user') {
+        filter.status = ['published', 'finished'];
+    }
+
     const pageNumber = Number(page)
     const limitNumber = Number(limit)
     const skip = (pageNumber - 1) * limitNumber
@@ -71,7 +75,7 @@ export async function getAllEventsService (query) {
 
         totalEvents = await eventModel.countDocuments(filter)
     } catch (error) {
-        throw error
+        throw new Error("Error al obtener los eventos: " + error.message);
     }
 
     return {
@@ -85,16 +89,25 @@ export async function getAllEventsService (query) {
     }
 }
 
-export async function getEventByIdService (id) {
+export async function getEventByIdService (user, id) {
+
+    const filter = {}
+
+    if (user.role === 'user') {
+        filter.status = ['published', 'finished'];
+    }
+
+    filter._id = id;
+
     try {
-        const event = await eventModel.findById(id).populate("organizer");
+        const event = await eventModel.find(filter).populate("organizer");
         if (!event) {
             throw new Error('Evento no encontrado');
         }
         return event;
     }
     catch (error) {
-        throw error;
+        throw new Error("Error al obtener el evento: " + error.message);
     }
 }
 
@@ -145,7 +158,7 @@ export async function createEventService (eventData) {
         return newEvent;
     }
     catch (error) {
-        throw error;
+        throw new Error("Error al crear el evento: " + error.message);
     }
 }
 
@@ -160,13 +173,34 @@ export async function updateEventService (id, eventData) {
         throw new Error('No se puede modificar el nombre del evento');
     }
 
-    if (event.status === 'cancelled') {
-        throw new Error('No se puede modificar un evento cancelado');
+    if (eventData.organizer) {
+        throw new Error('No se puede modificar el organizador del evento');
+    }
+
+    if (event.status !== 'draft') {
+        throw new Error('Solo se pueden modificar eventos en estado "draft"');
     }
 
     if (eventData.status && eventData.status !== event.status) {
         throw new Error('No se puede modificar el estado del evento con este endpoint, use PATCH /events/:eventId/status para cambiar el estado');
         }
+
+    if (eventData.date) {
+        const eventDate = new Date(eventData.date);
+        const currentDate = new Date();
+
+        if (eventDate <= currentDate) {
+            throw new Error('La fecha del evento debe ser futura');
+        }
+    }
+    
+    if (eventData.capacity && eventData.capacity <= 0) {
+        throw new Error('La capacidad del evento debe ser mayor a cero');
+    }
+
+    if (eventData.price && eventData.price < 0) {
+        throw new Error('El precio del evento no puede ser negativo');
+    }
 
     try {
         const updatedEvent = await eventModel.findByIdAndUpdate(id, eventData, { returnDocument: 'after' });
@@ -176,7 +210,7 @@ export async function updateEventService (id, eventData) {
         return updatedEvent;
     }
     catch (error) {
-        throw error;
+        throw new Error("Error al actualizar el evento: " + error.message);
     }
 }
 
@@ -184,8 +218,12 @@ export async function patchEventService (id, eventData) {
 
     if (eventData.status) {
         if (!['draft', 'published', 'cancelled', 'finished'].includes(eventData.status)) {
-            throw new Error('Estado del evento inválido');
+            throw new Error('Estado inválido');
         } else {
+            if (eventData.status === 'cancelled') {
+                throw new Error('Para cancelar un evento, use DELETE /events/:eventId');
+            }
+
             const event = await eventModel.findById(id);
             if (!event) {
                 throw new Error('Evento no encontrado');
@@ -193,6 +231,10 @@ export async function patchEventService (id, eventData) {
             if (event.status === 'cancelled' && eventData.status !== 'cancelled') {
                 throw new Error('No se puede cambiar el estado de un evento cancelado a otro estado');
             }
+            if (event.status === 'finished' && eventData.status !== 'finished') {
+                throw new Error('No se puede cambiar el estado de un evento finalizado a otro estado');
+            }
+
             if (event.status === 'draft' && eventData.status === 'finished') {
                 throw new Error('No se puede cambiar el estado de un evento en borrador a finalizado');
             }
@@ -200,6 +242,8 @@ export async function patchEventService (id, eventData) {
                 throw new Error('No se puede cambiar el estado de un evento publicado a borrador');
             }
         }
+    } else {
+        throw new Error('Este endpoint requiere que se especifique el nuevo estado del evento');
     }
 
     try {
@@ -210,7 +254,7 @@ export async function patchEventService (id, eventData) {
         return updatedEvent;
     }
     catch (error) {
-        throw error;
+        throw new Error("Error al actualizar el evento: " + error.message);
     }
 }
 
@@ -223,6 +267,6 @@ export async function deleteEventService (id) {
         return deletedEvent;
     }
     catch (error) {
-        throw error;
+        throw new Error("Error al eliminar el evento: " + error.message);
     }
 }
