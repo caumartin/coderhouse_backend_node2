@@ -31,7 +31,7 @@ export async function eventPermission (req, res, next) {
         if (req.user.role == 'organizer') {
             const event = await eventModel.findById(req.params.eventId);
             if (event.organizer == req.user.id) next()
-            else throw new Error ("Solo puedes modificar o borrar tus propios eventos");
+            else throw new Error ("Solo puedes modificar tus propios eventos");
         } else if (req.user.role == 'admin') next();
             else {
             throw new Error ('Acceso no permitido');
