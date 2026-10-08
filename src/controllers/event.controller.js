@@ -1,4 +1,4 @@
-import { getAllEventsService, getEventByIdService, createEventService, updateEventService, patchEventService ,deleteEventService } from '../services/event.service.js';
+import { getAllEventsService, getEventByIdService, createEventService, updateEventService, patchEventService } from '../services/event.service.js';
 
 export async function getAllEventsController (req, res, next) {
     try {
@@ -16,11 +16,11 @@ export async function getAllEventsController (req, res, next) {
         });
     }
     catch (error) {
-        if (error.message === 'No se encontraron eventos') {
-            res.status(404).json({ status: 'error', message: 'No se encontraron eventos' });
+        if (error.message) {
+            res.status(400).json({ status: 'error', message: error.message });
         }
         else {
-            res.status(500).json({ status: 'error', message: error.message || 'Error interno del servidor' });
+            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
         }
     }
 }
@@ -36,8 +36,8 @@ export async function getEventByIdController (req, res, next) {
         });
     }
     catch (error) {
-        if (error.message === 'Evento no encontrado') {
-            res.status(404).json({ status: 'error', message: 'Evento no encontrado' });
+        if (error.message) {
+            res.status(400).json({ status: 'error', message: error.message });
         }
         else {
             res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
@@ -55,7 +55,12 @@ export async function createEventController (req, res, next) {
         });
     }
     catch (error) {
-        res.status(400).json({ status: 'error', message: 'Error al crear el evento' })
+        if (error.message) {
+            res.status(400).json({ status: 'error', message: error.message });
+        }
+        else {
+            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+        }
     }
 }
 
@@ -70,8 +75,8 @@ export async function updateEventController (req, res, next) {
         });
     }
     catch (error) {
-        if (error.message === 'Evento no encontrado') {
-            res.status(404).json({ status: 'error', message: 'Evento no encontrado' });
+        if (error.message) {
+            res.status(400).json({ status: 'error', message: error.message });
         }
         else {
             res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
@@ -90,27 +95,8 @@ export async function patchEventController (req, res, next) {
         });
     }
     catch (error) {
-        if (error.message === 'Evento no encontrado') {
-            res.status(404).json({ status: 'error', message: 'Evento no encontrado' });
-        }
-        else {
-            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
-        }
-    }
-}
-
-export async function deleteEventController (req, res, next) {
-    try {
-        const { eventId } = req.params;
-        await deleteEventService(eventId);
-        res.status(200).json({
-            status: 'success',
-            message: 'Evento eliminado exitosamente'
-        });
-    }
-    catch (error) {
-        if (error.message === 'Evento no encontrado') {
-            res.status(404).json({ status: 'error', message: 'Evento no encontrado' });
+        if (error.message) {
+            res.status(400).json({ status: 'error', message: error.message });
         }
         else {
             res.status(500).json({ status: 'error', message: 'Error interno del servidor' });

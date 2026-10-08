@@ -73,6 +73,10 @@ export async function getAllEventsService (user, query) {
             .skip(skip)
             .limit(limitNumber)
 
+        if (events.length === 0) {
+            throw new Error('No se encontraron eventos con los filtros proporcionados');
+        }
+
         totalEvents = await eventModel.countDocuments(filter)
     } catch (error) {
         throw new Error("Error al obtener los eventos: " + error.message);
@@ -101,7 +105,7 @@ export async function getEventByIdService (user, id) {
 
     try {
         const event = await eventModel.find(filter).populate("organizer");
-        if (!event) {
+        if (event.length === 0) {
             throw new Error('Evento no encontrado');
         }
         return event;
@@ -220,10 +224,6 @@ export async function patchEventService (id, eventData) {
         if (!['draft', 'published', 'cancelled', 'finished'].includes(eventData.status)) {
             throw new Error('Estado inválido');
         } else {
-            if (eventData.status === 'cancelled') {
-                throw new Error('Para cancelar un evento, use DELETE /events/:eventId');
-            }
-
             const event = await eventModel.findById(id);
             if (!event) {
                 throw new Error('Evento no encontrado');
@@ -255,18 +255,5 @@ export async function patchEventService (id, eventData) {
     }
     catch (error) {
         throw new Error("Error al actualizar el evento: " + error.message);
-    }
-}
-
-export async function deleteEventService (id) {
-    try {
-        const deletedEvent = await eventModel.findByIdAndUpdate(id, { status: 'cancelled' }, { returnDocument: 'after' });
-        if (!deletedEvent) {
-            throw new Error('Evento no encontrado');
-        }
-        return deletedEvent;
-    }
-    catch (error) {
-        throw new Error("Error al eliminar el evento: " + error.message);
     }
 }

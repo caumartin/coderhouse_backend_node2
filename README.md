@@ -1,6 +1,6 @@
 # PROYECTO BACKEND EVENTOS #
 
-## PreEntrega 6 - Entidad EVENT, reglas de negocio (commit v1.19) ##
+## PreEntrega 6 - Entidad EVENT, reglas de negocio (commit v1.20) ##
 
 | Metodo | Ruta	| Acceso |  
 | --- | --- | --- |  

@@ -42,7 +42,7 @@ export async function purchaseTicketService (userId, eventId) {
             throw new Error('Evento no encontrado');
         }
         const event = eventExists.toObject();
-        if (!event.status) {
+        if (event.status !== "published") {
             throw new Error('El evento no está activo');
         }
 
