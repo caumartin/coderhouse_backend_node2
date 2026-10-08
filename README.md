@@ -1,6 +1,6 @@
 # PROYECTO BACKEND EVENTOS #
 
-## PreEntrega 6 - Entidad EVENT, reglas de negocio (commit v1.20) ##
+## PreEntrega 6 - Entidad EVENT, reglas de negocio (commit v1.21) ##
 
 | Metodo | Ruta	| Acceso |  
 | --- | --- | --- |  
@@ -16,14 +16,14 @@ Filtra por semejanza: name, description, location
 Soporta paginación (page, limit)
 Soporta ordenamiento por fecha (sort=date o sort=-date)
 
-** Reglas de Negocio: **
+### Reglas de Negocio: ###
 
 - campos obligatorios: name, description, category, date, location, capacity, price
 - status acepta solo valores definidos: draft, published, cancelled, finished (default draft)
 - capacity > 0; price≥ 0;
 - Un organizer no puede modificar eventos ajenos (sí puede admin)
 - Solo pueden modificarse eventos en estado borrador
-- El endpoint DELETE no "borra" eventos, los pasa a estado "cancelled"
+- Los eventos no se borran de la DB, se los pasa a estado "cancelled"
 - No se permiten fechas pasadas al crear
 - Un evento en estado "draft" puede pasar a "published" o "cancelled"
 - Un evento en estado "published" puede pasar a "finished" o "cancelled"
