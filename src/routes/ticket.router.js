@@ -1,15 +1,15 @@
 import { Router } from 'express';
-import { getAllTicketsController, getTicketByIdController, purchaseTicketController } from '../controllers/ticket.controller.js';
+import { getMyTicketsController, cancelTicketController } from '../controllers/ticket.controller.js';
 import passport from 'passport';
-import { purchasePermission } from '../middlewares/session.middleware.js'
 
 const router = Router();
 
 router.use(passport.authenticate("current", { session: false }));
+// rutas con acceso para todos los usuarios autenticados
+router.get('/my-tickets', getMyTicketsController);
 
-router.get('/', getAllTicketsController);
-router.get('/:ticketId', getTicketByIdController);
-
-router.post('/:userId/:eventId', purchasePermission, purchaseTicketController);
+router.use(rolesPermission(['admin', 'user']));
+// rutas con acceso solo para administradores y usuarios
+router.patch('/:ticketId/cancel', cancelTicketController);
 
 export default router;

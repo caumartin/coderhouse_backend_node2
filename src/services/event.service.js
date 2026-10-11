@@ -104,7 +104,7 @@ export async function getEventByIdService (user, id) {
     filter._id = id;
 
     try {
-        const event = await eventModel.find(filter).populate("organizer");
+        const event = await eventModel.find(filter).populate("organizer", "first_name last_name email");
         if (event.length === 0) {
             throw new Error('Evento no encontrado');
         }
