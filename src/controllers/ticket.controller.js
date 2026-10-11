@@ -1,12 +1,15 @@
-import { getAllTicketsService, getTicketByIdService, purchaseTicketService } from '../services/ticket.service.js';
+import { getMyTicketsService,
+         getTicketsByEventService,
+         cancelTicketService,
+         purchaseTicketService } from '../services/ticket.service.js';
 
-export async function getAllTicketsController (req, res, next) {
+export async function getMyTicketsController (req, res, next) {
     try {
-        const allTickets = await getAllTicketsService();
+        const myTickets = await getMyTicketsService(req.user.id);
         res.status(200).json({
             status: 'success',
             message: 'Tickets obtenidos exitosamente',
-            data: allTickets
+            data: myTickets
         });
     }
     catch (error) {
@@ -19,14 +22,14 @@ export async function getAllTicketsController (req, res, next) {
     }
 }
 
-export async function getTicketByIdController (req, res, next) {
+export async function getTicketsByEventController (req, res, next) {
     try {
-        const { ticketId } = req.params;
-        const ticket = await getTicketByIdService(ticketId);
+        const eventId = req.params.eventId;
+        const tickets = await getTicketsByEventService(eventId);
         res.status(200).json({
             status: 'success',
-            message: 'Ticket obtenido exitosamente',
-            data: ticket
+            message: 'Tickets obtenidos exitosamente',
+            data: tickets
         });
     }
     catch (error) {
@@ -41,8 +44,8 @@ export async function getTicketByIdController (req, res, next) {
 
 export async function purchaseTicketController (req, res, next) {
     try {
-        const { userId, eventId } = req.params;
-        const ticket = await purchaseTicketService(userId, eventId);
+        const eventId = req.params.eventId;
+        const ticket = await purchaseTicketService(req.user.id, eventId);
         res.status(201).json({
             status: 'success',
             message: 'Ticket comprado exitosamente',
@@ -52,6 +55,26 @@ export async function purchaseTicketController (req, res, next) {
     catch (error) {
         if (error.message === 'Faltan datos para comprar el ticket' || error.message === 'Usuario no encontrado' || error.message === 'Evento no encontrado' || error.message === 'El evento no está activo') {
             res.status(400).json({ status: 'error', message: error.message });
+        }
+        else {
+            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+        }
+    }
+}
+
+export async function cancelTicketController (req, res, next) {
+    try {
+        const ticketId = req.params.ticketId;
+        const ticket = await cancelTicketService(ticketId);
+        res.status(200).json({
+            status: 'success',
+            message: 'Ticket cancelado exitosamente',
+            data: ticket
+        });
+    }
+    catch (error) {
+        if (error.message === 'Ticket no encontrado') {
+            res.status(404).json({ status: 'error', message: 'Ticket no encontrado' });
         }
         else {
             res.status(500).json({ status: 'error', message: 'Error interno del servidor' });

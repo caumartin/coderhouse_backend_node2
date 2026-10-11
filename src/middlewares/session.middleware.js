@@ -1,4 +1,5 @@
 import { eventModel } from "../models/event.model.js";
+import { ticketModel } from "../models/ticket.model.js";
 
 export function rolesPermission(roles) {
     return function (req, res, next) {
@@ -32,6 +33,21 @@ export async function eventPermission (req, res, next) {
             const event = await eventModel.findById(req.params.eventId);
             if (event.organizer == req.user.id) next()
             else throw new Error ("Solo puedes modificar tus propios eventos");
+        } else if (req.user.role == 'admin') next();
+            else {
+            throw new Error ('Acceso no permitido');
+            }
+    } catch (error) {
+        res.status(403).json({ status: "error", message: error.message });
+    }
+}
+
+export async function cancelTicketPermission (req, res, next) {
+    try {
+        if (req.user.role == 'user') {
+            const ticket = await ticketModel.findById(req.params.ticketId);
+            if (ticket.user == req.user.id) next()
+            else throw new Error ("Solo puedes cancelar tus propios tickets");
         } else if (req.user.role == 'admin') next();
             else {
             throw new Error ('Acceso no permitido');
