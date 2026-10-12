@@ -4,7 +4,9 @@ import { userModel } from '../models/user.model.js';
 
 export async function getMyTicketsService (userId) {
     try {
-        const allTickets = await ticketModel.find({ user: userId });
+        const allTickets = await ticketModel.find({ user: userId })
+            .populate('event', 'name description date location capacity')
+            .populate('user', 'first_name last_name email');
         if (allTickets.length === 0) {
             throw new Error('No se encontraron tickets');
         }
@@ -30,13 +32,22 @@ export async function getTicketsByEventService (eventId) {
 
 export async function cancelTicketService (ticketId) {
     try {
-        const canceledTicket = await ticketModel.findByIdAndUpdate(ticketId, { status: 'canceled', canceledAt: new Date() }, { returnDocument: 'after' });
-        if (!canceledTicket) {
+        const ticket = await ticketModel.findById(ticketId);
+        if (!ticket) {
             throw new Error('Ticket no encontrado');
         }
-        const updatedEvent = await eventModel.findByIdAndUpdate(canceledTicket.event, { $inc: { capacity: canceledTicket.quantity } }, { returnDocument: 'after' });
+        if (ticket.status === 'cancelled') {
+            throw new Error('El ticket ya ha sido cancelado previamente');
+        }
+        const updatedEvent = await eventModel.findByIdAndUpdate(ticket.event, { $inc: { capacity: ticket.quantity } }, { returnDocument: 'after' });
+        const cancelledTicket = await ticketModel.findByIdAndUpdate(ticketId, { status: 'cancelled', cancelledAt: new Date() }, { returnDocument: 'after' })
+            .populate('user', 'first_name last_name email')
+            .populate('event', 'name description date location capacity');
+        if (!cancelledTicket) {
+            throw new Error('Ticket no encontrado');
+        }
 
-        return canceledTicket, updatedEvent;
+        return cancelledTicket;
     }
     catch (error) {
         throw error;
@@ -63,11 +74,13 @@ export async function purchaseTicketService (userId, eventId, quantity) {
         }
         const code = Math.random().toString(36).substring(2, 10).toUpperCase(); // Genera un código aleatorio de 8 caracteres
 
-        const newTicket = await ticketModel.create({ user: userId, event: eventId, quantity: quantity, code: code });
+        const newTicket = await ticketModel
+            .create({ user: userId, event: eventId, quantity: quantity, code: code })
 
-        const updatedEvent = await eventModel.findByIdAndUpdate(eventId, { $inc: { capacity: -quantity } }, { returnDocument: 'after' });
+        await newTicket.populate('user', 'first_name last_name email');
+        await newTicket.populate('event', 'name description date location capacity');
 
-        return newTicket, updatedEvent;
+        return newTicket;
     }
     catch (error) {
         throw error;

@@ -32,7 +32,7 @@ export async function getEventByIdController (req, res, next) {
         res.status(200).json({
             status: 'success',
             message: 'Evento obtenido exitosamente',
-            data: event
+            payload: event
         });
     }
     catch (error) {
@@ -51,7 +51,7 @@ export async function createEventController (req, res, next) {
         res.status(201).json({
             status: 'success',
             message: 'Evento creado exitosamente',
-            data: event
+            payload: event
         });
     }
     catch (error) {
@@ -71,7 +71,7 @@ export async function updateEventController (req, res, next) {
         res.status(200).json({
             status: 'success',
             message: 'Evento actualizado exitosamente',
-            data: event
+            payload: event
         });
     }
     catch (error) {
@@ -91,7 +91,7 @@ export async function patchEventController (req, res, next) {
         res.status(200).json({
             status: 'success',
             message: 'Evento actualizado exitosamente',
-            data: event
+            payload: event
         });
     }
     catch (error) {

@@ -9,7 +9,7 @@ export async function getMyTicketsController (req, res, next) {
         res.status(200).json({
             status: 'success',
             message: 'Tickets obtenidos exitosamente',
-            data: myTickets
+            payload: myTickets
         });
     }
     catch (error) {
@@ -29,7 +29,7 @@ export async function getTicketsByEventController (req, res, next) {
         res.status(200).json({
             status: 'success',
             message: 'Tickets obtenidos exitosamente',
-            data: tickets
+            payload: tickets
         });
     }
     catch (error) {
@@ -46,12 +46,11 @@ export async function purchaseTicketController (req, res, next) {
     try {
         const eventId = req.params.eventId;
         const { quantity } = req.body;
-        const { ticket, updatedEvent } = await purchaseTicketService(req.user.id, eventId, quantity);
-        console.log('Updated Event:', updatedEvent);
+        const newTicket = await purchaseTicketService(req.user.id, eventId, quantity);
         res.status(201).json({
             status: 'success',
             message: 'Ticket comprado exitosamente',
-            data: ticket
+            payload: newTicket
         });
     }
     catch (error) {
@@ -67,12 +66,11 @@ export async function purchaseTicketController (req, res, next) {
 export async function cancelTicketController (req, res, next) {
     try {
         const ticketId = req.params.ticketId;
-        const { ticket, updatedEvent } = await cancelTicketService(ticketId);
-        console.log('Updated Event:', updatedEvent);
+        const cancelledTicket = await cancelTicketService(ticketId);
         res.status(200).json({
             status: 'success',
             message: 'Ticket cancelado exitosamente',
-            data: ticket
+            payload: cancelledTicket
         });
     }
     catch (error) {
@@ -80,7 +78,7 @@ export async function cancelTicketController (req, res, next) {
             res.status(404).json({ status: 'error', message: 'Ticket no encontrado' });
         }
         else {
-            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+            res.status(500).json({ status: 'error', message: error.message });
         }
     }
 }

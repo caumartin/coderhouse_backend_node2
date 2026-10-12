@@ -2,12 +2,12 @@ import { Schema, model, Types } from 'mongoose';
 
 const ticketSchema = new Schema({
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'User',
       required: true
     },
     event: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'Event',
       required: true
     },
