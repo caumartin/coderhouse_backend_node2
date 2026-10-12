@@ -2,9 +2,9 @@ import { ticketModel } from '../models/ticket.model.js';
 import { eventModel } from '../models/event.model.js';
 import { userModel } from '../models/user.model.js';
 
-export async function getAllTicketsService () {
+export async function getMyTicketsService (userId) {
     try {
-        const allTickets = await ticketModel.find();
+        const allTickets = await ticketModel.find({ user: userId });
         if (allTickets.length === 0) {
             throw new Error('No se encontraron tickets');
         }
@@ -15,28 +15,36 @@ export async function getAllTicketsService () {
     }
 }
 
-export async function getTicketByIdService (id) {
+export async function getTicketsByEventService (eventId) {
     try {
-        const ticket = await ticketModel.findById(id);
-        if (!ticket) {
-            throw new Error('Ticket no encontrado');
+        const tickets = await ticketModel.find({ event: eventId });
+        if (tickets.length === 0) {
+            throw new Error('No se encontraron tickets para el evento especificado');
         }
-        return ticket;
+        return tickets;
     }
     catch (error) {
         throw error;
     }
 }
 
-export async function purchaseTicketService (userId, eventId) {
+export async function cancelTicketService (ticketId) {
     try {
-        if (!userId || !eventId) {
-            throw new Error('Faltan datos para comprar el ticket');
+        const canceledTicket = await ticketModel.findByIdAndUpdate(ticketId, { status: 'canceled', canceledAt: new Date() }, { returnDocument: 'after' });
+        if (!canceledTicket) {
+            throw new Error('Ticket no encontrado');
         }
-        const userExists = await userModel.findById(userId);
-        if (!userExists) {
-            throw new Error('Usuario no encontrado');
-        }
+        const updatedEvent = await eventModel.findByIdAndUpdate(canceledTicket.event, { $inc: { capacity: canceledTicket.quantity } }, { returnDocument: 'after' });
+
+        return canceledTicket, updatedEvent;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+export async function purchaseTicketService (userId, eventId, quantity) {
+    try {
         const eventExists = await eventModel.findById(eventId);
         if (!eventExists) {
             throw new Error('Evento no encontrado');
@@ -45,15 +53,21 @@ export async function purchaseTicketService (userId, eventId) {
         if (event.status !== "published") {
             throw new Error('El evento no está activo');
         }
-
-        const newTicket = await ticketModel.create({ user: userId, event: eventId });
-
-        const updatedEvent = await eventModel.findByIdAndUpdate(eventId, { $inc: { available_tickets: -1 } }, { returnDocument: 'after' });
-        const upEvent = updatedEvent.toObject();
-        if (upEvent.available_tickets === 0) {
-            await eventModel.findByIdAndUpdate(eventId, { status: false });
+        if (!quantity) {
+            quantity = 1; // Si no se proporciona la cantidad, se establece en 1 por defecto
+        } else if (quantity <= 0) {
+            throw new Error('La cantidad de tickets a comprar debe ser mayor que cero');
         }
-        return newTicket;
+        if (event.capacity < quantity) {
+            throw new Error('No hay suficientes tickets disponibles para comprar');
+        }
+        const code = Math.random().toString(36).substring(2, 10).toUpperCase(); // Genera un código aleatorio de 8 caracteres
+
+        const newTicket = await ticketModel.create({ user: userId, event: eventId, quantity: quantity, code: code });
+
+        const updatedEvent = await eventModel.findByIdAndUpdate(eventId, { $inc: { capacity: -quantity } }, { returnDocument: 'after' });
+
+        return newTicket, updatedEvent;
     }
     catch (error) {
         throw error;

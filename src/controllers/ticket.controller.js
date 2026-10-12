@@ -45,7 +45,9 @@ export async function getTicketsByEventController (req, res, next) {
 export async function purchaseTicketController (req, res, next) {
     try {
         const eventId = req.params.eventId;
-        const ticket = await purchaseTicketService(req.user.id, eventId);
+        const { quantity } = req.body;
+        const { ticket, updatedEvent } = await purchaseTicketService(req.user.id, eventId, quantity);
+        console.log('Updated Event:', updatedEvent);
         res.status(201).json({
             status: 'success',
             message: 'Ticket comprado exitosamente',
@@ -65,7 +67,8 @@ export async function purchaseTicketController (req, res, next) {
 export async function cancelTicketController (req, res, next) {
     try {
         const ticketId = req.params.ticketId;
-        const ticket = await cancelTicketService(ticketId);
+        const { ticket, updatedEvent } = await cancelTicketService(ticketId);
+        console.log('Updated Event:', updatedEvent);
         res.status(200).json({
             status: 'success',
             message: 'Ticket cancelado exitosamente',
