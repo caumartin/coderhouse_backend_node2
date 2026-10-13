@@ -40,7 +40,7 @@ export async function getAllEventsService (user, query) {
     if (search) {
         filter.$or = [
         {
-            title: {
+            name: {
             $regex: search,
             $options: 'i'
             }
@@ -95,18 +95,13 @@ export async function getAllEventsService (user, query) {
 
 export async function getEventByIdService (user, id) {
 
-    const filter = {}
-
-    if (user.role === 'user') {
-        filter.status = ['published', 'finished'];
-    }
-
-    filter._id = id;
-
     try {
-        const event = await eventModel.find(filter).populate("organizer", "first_name last_name email");
-        if (event.length === 0) {
+        const event = await eventModel.findById(id).populate("organizer", "first_name last_name email");
+        if (!event) {
             throw new Error('Evento no encontrado');
+        }
+        if (user.role === 'user' && event.status !== 'published' && event.status !== 'finished') {
+            throw new Error('No tienes permiso para ver este evento');
         }
         return event;
     }
@@ -147,8 +142,8 @@ export async function createEventService (eventData) {
         throw new Error('La capacidad del evento es requerida');
     }
     if (eventData.price) {
-        if (eventData.price < 0) {
-            throw new Error('El precio del evento no puede ser negativo');
+        if (!(typeof eventData.price === "number" && eventData.price >= 0)) {
+            throw new Error('El precio del evento debe ser un número válido y no negativo');
         }
     } else {
         throw new Error('El precio del evento es requerido');

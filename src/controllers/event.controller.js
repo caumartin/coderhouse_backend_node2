@@ -16,10 +16,13 @@ export async function getAllEventsController (req, res, next) {
         });
     }
     catch (error) {
-        if (error.message) {
+        if (error.message === 'No se encontraron eventos con los filtros proporcionados') {
+            res.status(404).json({ status: 'error', message: 'No se encontraron eventos con los filtros proporcionados' });
+        } else if (error.message === 'Error al obtener los eventos: Error de validación') {
+            res.status(400).json({ status: 'error', message: 'Error de validación en los filtros proporcionados' });
+        } else if (error.message) {
             res.status(400).json({ status: 'error', message: error.message });
-        }
-        else {
+        } else {
             res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
         }
     }
@@ -36,10 +39,13 @@ export async function getEventByIdController (req, res, next) {
         });
     }
     catch (error) {
-        if (error.message) {
+        if (error.message === 'Evento no encontrado') {
+            res.status(404).json({ status: 'error', message: 'Evento no encontrado' });
+        } else if (error.message === 'No tienes permiso para ver este evento') {
+            res.status(403).json({ status: 'error', message: 'No tienes permiso para ver este evento' });
+        } else if (error.message) {
             res.status(400).json({ status: 'error', message: error.message });
-        }
-        else {
+        } else {
             res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
         }
     }

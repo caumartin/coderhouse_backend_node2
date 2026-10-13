@@ -31,7 +31,7 @@ export async function eventPermission (req, res, next) {
     try {
         if (req.user.role == 'organizer') {
             const event = await eventModel.findById(req.params.eventId);
-            if (event.organizer == req.user.id) next()
+            if (event.organizer.equals(req.user.id)) next()
             else throw new Error ("Solo puedes modificar tus propios eventos");
         } else if (req.user.role == 'admin') next();
             else {
@@ -46,7 +46,7 @@ export async function cancelTicketPermission (req, res, next) {
     try {
         if (req.user.role == 'user') {
             const ticket = await ticketModel.findById(req.params.ticketId);
-            if (ticket.user == req.user.id) next()
+            if (ticket.user.equals(req.user.id)) next()
             else throw new Error ("Solo puedes cancelar tus propios tickets");
         } else if (req.user.role == 'admin') next();
             else {
