@@ -17,7 +17,7 @@ export async function getMyTicketsController (req, res, next) {
             res.status(404).json({ status: 'error', message: 'No se encontraron tickets' });
         }
         else {
-            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+            res.status(500).json({ status: 'error', message: error.message });
         }
     }
 }
@@ -37,7 +37,7 @@ export async function getTicketsByEventController (req, res, next) {
             res.status(404).json({ status: 'error', message: 'Ticket no encontrado' });
         }
         else {
-            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+            res.status(500).json({ status: 'error', message: error.message });
         }
     }
 }
@@ -55,10 +55,10 @@ export async function purchaseTicketController (req, res, next) {
     }
     catch (error) {
         if (error.message === 'Faltan datos para comprar el ticket' || error.message === 'Usuario no encontrado' || error.message === 'Evento no encontrado' || error.message === 'El evento no está activo') {
-            res.status(400).json({ status: 'error', message: error.message });
+            res.status(400).json({ status: 'error', message: 'Error en los datos proporcionados' });
         }
         else {
-            res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+            res.status(500).json({ status: 'error', message: error.message });
         }
     }
 }

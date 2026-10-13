@@ -19,7 +19,8 @@ export async function getMyTicketsService (userId) {
 
 export async function getTicketsByEventService (eventId) {
     try {
-        const tickets = await ticketModel.find({ event: eventId });
+        const tickets = await ticketModel.find({ event: eventId })
+            .populate('user', 'first_name last_name email');
         if (tickets.length === 0) {
             throw new Error('No se encontraron tickets para el evento especificado');
         }
