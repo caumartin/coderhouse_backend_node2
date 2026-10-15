@@ -15,8 +15,8 @@ router.post('/:eventId/tickets', createTicketController);
 | Metodo | Ruta	| Acceso |  
 | --- | --- | --- |  
 | POST | /api/events | organizer, admin |  
-| GET | /api/events | publico |  
-| GET | /api/events/:eventId | publico |  
+| GET | /api/events | cualquier usuario |  
+| GET | /api/events/:eventId | cualquier usuario |  
 | PUT | /api/events/:eventId | dueño del avento o admin |  
 | PATCH | /api/events/:eventId/status | dueño del avento o admin |  
 
