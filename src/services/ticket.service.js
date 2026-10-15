@@ -37,9 +37,11 @@ export async function cancelTicketService (ticketId) {
         if (!ticket) {
             throw new Error('Ticket no encontrado');
         }
+
         if (ticket.status === 'cancelled') {
             throw new Error('El ticket ya ha sido cancelado previamente');
         }
+
         const cancelledTicket = await ticketModel.findByIdAndUpdate(ticketId, { status: 'cancelled', cancelledAt: new Date() }, { returnDocument: 'after' })
             .populate('user', 'first_name last_name email')
             .populate('event', 'name description date location');

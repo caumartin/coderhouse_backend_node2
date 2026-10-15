@@ -1,13 +1,27 @@
 # PROYECTO BACKEND EVENTOS #
 
-## PreEntrega 7 - Entidad TICKET, reglas de negocio (commit v1.29) ##
+## PreEntrega 7 - Entidad TICKET, reglas de negocio (commit v1.30) ##
 
-router.get('/my-tickets', getMyTicketsController);
-router.patch('/:ticketId/cancel', cancelTicketController);
-router.get('/:eventId/tickets', getTicketsByEventController);
-router.post('/:eventId/tickets', createTicketController);
+| Metodo | Ruta	| Acceso |  
+| --- | --- | --- |  
+| POST | /api/events/:eventId/tickets | cualquier usuario autenticado |  
+| GET | /api/tickets/my-tickets | autenticado, solo propios |  
+| GET | /api/events/:eventId/tickets | organizer (propios) o admin |  
+| PATCH | /api/tickets/:ticketId/cancel | dueño del ticket o admin |  
 
+### Validaciones al crear ticket ###
 
+- El evento existe
+- El evento está en estado published
+- quantity es un número válido (> 0)
+- Cupos disponibles ≥ quantity solicitada (solo cuentan tickets con status activo; los cancelled no ocupan cupo)
+- El usuario no tiene ya un ticket activo para ese evento
+
+### Validaciones al cancelar ticket ###
+
+- Cambia status a cancelled y registra cancelledAt; no elimina el documento
+- Valida que el ticket exista, pertenezca al solicitante (o sea admin) y no esté ya cancelado
+- Al cancelar, el cupo queda disponible automáticamente (por no contarse en el cálculo)
 
 
 ## PreEntrega 6 - Entidad EVENT, reglas de negocio (commit v1.21) ##
