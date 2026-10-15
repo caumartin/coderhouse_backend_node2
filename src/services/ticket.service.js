@@ -64,6 +64,11 @@ export async function purchaseTicketService (userId, eventId, quantity) {
         if (event.status !== "published") {
             throw new Error('El evento no está activo');
         }
+        const existingTicket = await ticketModel.findOne({ user: userId, event: eventId, status: 'active' });
+        if (existingTicket) {
+            throw new Error('El usuario ya tiene un ticket activo para este evento');
+        }
+
         if (!quantity) {
             quantity = 1; // Si no se proporciona la cantidad, se establece en 1 por defecto
         } else if (quantity <= 0) {
