@@ -1,6 +1,6 @@
 # PROYECTO BACKEND EVENTOS #
 
-## PreEntrega 7 - Entidad TICKET, reglas de negocio (commit v1.2x) ##
+## PreEntrega 7 - Entidad TICKET, reglas de negocio (commit v1.29) ##
 
 router.get('/my-tickets', getMyTicketsController);
 router.patch('/:ticketId/cancel', cancelTicketController);
