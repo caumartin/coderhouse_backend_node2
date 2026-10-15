@@ -46,7 +46,7 @@ export async function purchaseTicketController (req, res, next) {
     try {
         const eventId = req.params.eventId;
         const { quantity } = req.body;
-        const newTicket = await purchaseTicketService(req.user.id, eventId, quantity);
+        const newTicket = await purchaseTicketService(req.user, eventId, quantity);
         res.status(201).json({
             status: 'success',
             message: 'Ticket comprado exitosamente',

@@ -1,5 +1,7 @@
 import { ticketModel } from '../models/ticket.model.js';
 import { eventModel } from '../models/event.model.js';
+import { sendTicketConfirmationEmail } from './mailing.service.js';
+
 
 export async function getMyTicketsService (userId) {
     try {
@@ -55,7 +57,7 @@ export async function cancelTicketService (ticketId) {
     }
 }
 
-export async function purchaseTicketService (userId, eventId, quantity) {
+export async function purchaseTicketService (user, eventId, quantity) {
     try {
         const eventExists = await eventModel.findById(eventId);
         if (!eventExists) {
@@ -65,7 +67,7 @@ export async function purchaseTicketService (userId, eventId, quantity) {
         if (event.status !== "published") {
             throw new Error('El evento no está activo');
         }
-        const existingTicket = await ticketModel.findOne({ user: userId, event: eventId, status: 'active' });
+        const existingTicket = await ticketModel.findOne({ user: user.id, event: eventId, status: 'active' });
         if (existingTicket) {
             throw new Error('El usuario ya tiene un ticket activo para este evento');
         }
@@ -91,18 +93,22 @@ export async function purchaseTicketService (userId, eventId, quantity) {
         const code = Math.random().toString(36).substring(2, 10).toUpperCase(); // Genera un código aleatorio de 8 caracteres
 
         const newTicket = await ticketModel
-            .create({ user: userId, event: eventId, quantity: quantity, code: code })
+            .create({ user: user.id, event: eventId, quantity: quantity, code: code })
 
         await newTicket.populate('user', 'first_name last_name email');
         await newTicket.populate('event', 'name description date location');
 
-        await sendTicketConfirmationEmail({
-        to: req.user.email,
-        userName: req.user.first_name,
-        eventTitle: event.title,
-        ticketCode
-        })
-                
+        try {
+            await sendTicketConfirmationEmail({
+                to: user.email,
+                userName: user.first_name,
+                eventTitle: event.title,
+                ticketCode: code
+            });
+        } catch (emailError) {
+            console.error('Error al enviar el correo de confirmación:', emailError);
+        }
+
         return newTicket;
     }
     catch (error) {
