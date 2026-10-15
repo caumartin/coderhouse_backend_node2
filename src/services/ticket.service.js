@@ -1,6 +1,5 @@
 import { ticketModel } from '../models/ticket.model.js';
 import { eventModel } from '../models/event.model.js';
-import { userModel } from '../models/user.model.js';
 
 export async function getMyTicketsService (userId) {
     try {
