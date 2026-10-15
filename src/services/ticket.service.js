@@ -96,6 +96,13 @@ export async function purchaseTicketService (userId, eventId, quantity) {
         await newTicket.populate('user', 'first_name last_name email');
         await newTicket.populate('event', 'name description date location');
 
+        await sendTicketConfirmationEmail({
+        to: req.user.email,
+        userName: req.user.first_name,
+        eventTitle: event.title,
+        ticketCode
+        })
+                
         return newTicket;
     }
     catch (error) {
