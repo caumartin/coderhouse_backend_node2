@@ -1,6 +1,6 @@
 # PROYECTO BACKEND EVENTOS #
 
-## PreEntrega 7 - Entidad TICKET, reglas de negocio (commit v1.30) ##
+## PreEntrega 7 - Entidad TICKET, reglas de negocio (commit v1.33) ##
 
 | Metodo | Ruta	| Acceso |  
 | --- | --- | --- |  
