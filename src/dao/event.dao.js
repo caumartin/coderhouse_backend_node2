@@ -4,8 +4,7 @@ import { eventModel } from '../models/event.model.js'
 export class EventDAO {
    
  async getById(id) {
-    return eventModel.findById(id)
-   
+    return eventModel.findById(id).populate('organizer', 'first_name last_name email')
  }
 
     
@@ -21,7 +20,6 @@ async getByFilters(filters, options = {}) {
       .sort(sort)
       .skip(skip)
       .limit(limitNumber)
-      .populate('category')
       .populate('organizer', 'first_name last_name email')
   }
 
@@ -34,8 +32,6 @@ async getByFilters(filters, options = {}) {
   }
 
   async update(id, data) {
-    return eventModel.findByIdAndUpdate(id, data, {
-      new: true
-    })
+    return eventModel.findByIdAndUpdate(id, data, { returnDocument: 'after' })
   }
 }

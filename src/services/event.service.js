@@ -107,7 +107,8 @@ export async function getAllEventsService (user, query) {
 export async function getEventByIdService (user, id) {
 
     try {
-        const event = await eventModel.findById(id).populate("organizer", "first_name last_name email");
+        //const event = await eventModel.findById(id).populate("organizer", "first_name last_name email");
+        const event = await eventRepository.getEventById(id)
         if (!event) {
             throw new Error('Evento no encontrado');
         }
@@ -164,7 +165,8 @@ export async function createEventService (eventData) {
     }
 
     try {
-        const newEvent = await eventModel.create(eventData);
+        //const newEvent = await eventModel.create(eventData);
+        const newEvent = await eventRepository.createEvent(eventData);
         return newEvent;
     }
     catch (error) {
@@ -174,7 +176,8 @@ export async function createEventService (eventData) {
 
 export async function updateEventService (id, eventData) {
 
-    const event = await eventModel.findById(id);
+    //const event = await eventModel.findById(id);
+    const event = await eventRepository.getEventById(id);
     if (!event) {
         throw new Error('Evento no encontrado');
     }
@@ -213,7 +216,8 @@ export async function updateEventService (id, eventData) {
     }
 
     try {
-        const updatedEvent = await eventModel.findByIdAndUpdate(id, eventData, { returnDocument: 'after' });
+        //const updatedEvent = await eventModel.findByIdAndUpdate(id, eventData, { returnDocument: 'after' });
+        const updatedEvent = await eventRepository.updateEvent(id, eventData);
         if (!updatedEvent) {
             throw new Error('Evento no encontrado');
         }
@@ -230,7 +234,8 @@ export async function patchEventService (id, eventData) {
         if (!['draft', 'published', 'cancelled', 'finished'].includes(eventData.status)) {
             throw new Error('Estado inválido');
         } else {
-            const event = await eventModel.findById(id);
+            //const event = await eventModel.findById(id);
+            const event = await eventRepository.getEventById(id);
             if (!event) {
                 throw new Error('Evento no encontrado');
             }
@@ -253,7 +258,8 @@ export async function patchEventService (id, eventData) {
     }
 
     try {
-        const updatedEvent = await eventModel.findByIdAndUpdate(id, { status: eventData.status }, { returnDocument: 'after' });
+        //const updatedEvent = await eventModel.findByIdAndUpdate(id, { status: eventData.status }, { returnDocument: 'after' });
+        const updatedEvent = await eventRepository.updateEvent(id, eventData);
         if (!updatedEvent) {
             throw new Error('Evento no encontrado');
         }
