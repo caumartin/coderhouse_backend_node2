@@ -13,14 +13,14 @@ async getByFilters(filters, options = {}) {
     const {
       sort = 'date',
       skip = 0,
-      limit = 10
+      limitNumber = 10
     } = options
 
     return eventModel
       .find(filters)
       .sort(sort)
       .skip(skip)
-      .limit(limit)
+      .limit(limitNumber)
       .populate('category')
       .populate('organizer', 'first_name last_name email')
   }

@@ -1,4 +1,7 @@
-import { eventModel } from '../models/event.model.js';
+//import { eventModel } from '../models/event.model.js';
+import { EventRepository } from '../repositories/event.repository.js'
+
+const eventRepository = new EventRepository()
 
 export async function getAllEventsService (user, query) {
 
@@ -62,22 +65,30 @@ export async function getAllEventsService (user, query) {
     const limitNumber = Number(limit)
     const skip = (pageNumber - 1) * limitNumber
 
+    const options = {
+        'limitNumber': limitNumber,
+        'skip': skip,
+        'sort': sort
+    }
+
     let events = []
     let totalEvents = 0
 
     try {
-        events = await eventModel
-            .find(filter)
-            .populate('organizer', 'first_name last_name email')
-            .sort(sort)
-            .skip(skip)
-            .limit(limitNumber)
+//        events = await eventModel
+//            .find(filter)
+//            .populate('organizer', 'first_name last_name email')
+//            .sort(sort)
+//            .skip(skip)
+//            .limit(limitNumber)
+
+        events = await eventRepository.getEventsByFilters(filter, options)
 
         if (events.length === 0) {
             throw new Error('No se encontraron eventos con los filtros proporcionados');
         }
 
-        totalEvents = await eventModel.countDocuments(filter)
+        totalEvents = await eventRepository.countEvents(filter)
     } catch (error) {
         throw new Error("Error al obtener los eventos: " + error.message);
     }
