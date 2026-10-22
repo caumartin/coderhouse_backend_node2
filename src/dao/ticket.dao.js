@@ -8,8 +8,8 @@ export class TicketDAO {
            .populate('user', 'first_name last_name email');
   }
 
-  async findByUser(userId) {
-    return ticketModel.find({ user: userId })
+  async findByData(data) {
+    return ticketModel.find(data)
            .populate('event', 'name description date location')
            .populate('user', 'first_name last_name email');
   }
@@ -46,4 +46,12 @@ export class TicketDAO {
   async create(data) {
     return ticketModel.create(data)
   }
+
+  async update(id, data) {
+    return ticketModel.findByIdAndUpdate(id, data, { returnDocument: 'after' })
+           .populate('user', 'first_name last_name email')
+           .populate('event', 'name description date location');
+
+  }
+
 }

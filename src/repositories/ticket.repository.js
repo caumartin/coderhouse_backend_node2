@@ -9,7 +9,11 @@ export class TicketRepository {
   }
 
   async getTicketsByUser(userId) {
-    return ticketDAO.findByUser(userId)
+    return ticketDAO.findByData({ user: userId })
+  }
+
+  async getTicketsByEvent(event) {
+    return ticketDAO.findByData({ event: event })
   }
 
   async getActiveTicketByUserAndEvent(userId, eventId) {
@@ -23,4 +27,9 @@ export class TicketRepository {
   async createTicket(data) {
     return ticketDAO.create(data)
   }
+
+  async cancelTicket(id) {
+    return ticketDAO.update(id, { status: 'cancelled', cancelledAt: new Date() })
+  }
+
 }

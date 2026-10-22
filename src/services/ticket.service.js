@@ -23,8 +23,9 @@ export async function getMyTicketsService (userId) {
 
 export async function getTicketsByEventService (eventId) {
     try {
-        const tickets = await ticketModel.find({ event: eventId })
-            .populate('user', 'first_name last_name email');
+        //const tickets = await ticketModel.find({ event: eventId })
+        const tickets = await ticketRepository.getTicketsByEvent(eventId);
+
         if (tickets.length === 0) {
             throw new Error('No se encontraron tickets para el evento especificado');
         }
@@ -37,7 +38,8 @@ export async function getTicketsByEventService (eventId) {
 
 export async function cancelTicketService (ticketId) {
     try {
-        const ticket = await ticketModel.findById(ticketId);
+        //const ticket = await ticketModel.findById(ticketId);
+        const ticket = await ticketRepository.getTicketById(ticketId);
         if (!ticket) {
             throw new Error('Ticket no encontrado');
         }
@@ -46,9 +48,8 @@ export async function cancelTicketService (ticketId) {
             throw new Error('El ticket ya ha sido cancelado previamente');
         }
 
-        const cancelledTicket = await ticketModel.findByIdAndUpdate(ticketId, { status: 'cancelled', cancelledAt: new Date() }, { returnDocument: 'after' })
-            .populate('user', 'first_name last_name email')
-            .populate('event', 'name description date location');
+        //const cancelledTicket = await ticketModel.findByIdAndUpdate(ticketId, { status: 'cancelled', cancelledAt: new Date() }, { returnDocument: 'after' })
+        const cancelledTicket = await ticketRepository.cancelTicket(ticketId);
         if (!cancelledTicket) {
             throw new Error('Ticket no encontrado');
         }
@@ -62,7 +63,8 @@ export async function cancelTicketService (ticketId) {
 
 export async function purchaseTicketService (user, eventId, quantity) {
     try {
-        const eventExists = await eventModel.findById(eventId);
+        //const eventExists = await eventModel.findById(eventId);
+        const eventExists = await eventRepository.getEventById(eventId);
         if (!eventExists) {
             throw new Error('Evento no encontrado');
         }
@@ -70,7 +72,7 @@ export async function purchaseTicketService (user, eventId, quantity) {
         if (event.status !== "published") {
             throw new Error('El evento no está activo');
         }
-        const existingTicket = await ticketModel.findOne({ user: user.id, event: eventId, status: 'active' });
+        const existingTicket = await ticketRepository.getActiveTicketByUserAndEvent(user.id, eventId);
         if (existingTicket) {
             throw new Error('El usuario ya tiene un ticket activo para este evento');
         }
@@ -81,12 +83,13 @@ export async function purchaseTicketService (user, eventId, quantity) {
             throw new Error('La cantidad de tickets a comprar debe ser mayor que cero');
         }
 
-        const result = await ticketModel.aggregate([
-            { $match: { event: eventExists._id, status: 'active' } },
-            { $group: { _id: '$event', totalReserved: { $sum: '$quantity' } } }
-        ]);
+        //const result = await ticketModel.aggregate([
+        //    { $match: { event: eventExists._id, status: 'active' } },
+        //    { $group: { _id: '$event', totalReserved: { $sum: '$quantity' } } }
+        //]);
 
-        const reservedTickets = result.length > 0 ? result[0].totalReserved : 0;
+        //const reservedTickets = result.length > 0 ? result[0].totalReserved : 0;
+        const reservedTickets = await ticketRepository.getReservedQuantity(eventExists._id);
         const availableTickets = event.capacity - reservedTickets;
 
         if (availableTickets < quantity) {
@@ -95,8 +98,8 @@ export async function purchaseTicketService (user, eventId, quantity) {
 
         const code = Math.random().toString(36).substring(2, 10).toUpperCase(); // Genera un código aleatorio de 8 caracteres
 
-        const newTicket = await ticketModel
-            .create({ user: user.id, event: eventId, quantity: quantity, code: code })
+        const newTicket = await ticketRepository
+            .createTicket({ user: user.id, event: eventId, quantity: quantity, code: code })
 
         await newTicket.populate('user', 'first_name last_name email');
         await newTicket.populate('event', 'name description date location');
