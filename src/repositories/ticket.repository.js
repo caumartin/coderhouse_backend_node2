@@ -3,6 +3,15 @@ import { TicketDAO } from '../dao/ticket.dao.js'
 const ticketDAO = new TicketDAO()
 
 export class TicketRepository {
+
+  async getTicketById(id) {
+    return ticketDAO.findById(id)
+  }
+
+  async getTicketsByUser(userId) {
+    return ticketDAO.findByUser(userId)
+  }
+
   async getActiveTicketByUserAndEvent(userId, eventId) {
     return ticketDAO.findActiveByUserAndEvent(userId, eventId)
   }

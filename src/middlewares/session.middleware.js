@@ -1,9 +1,10 @@
 //import { eventModel } from "../models/event.model.js";
-import { ticketModel } from "../models/ticket.model.js";
+//import { ticketModel } from "../models/ticket.model.js";
 import { EventRepository } from '../repositories/event.repository.js'
-//import { TicketRepository } from '../repositories/ticket.repository.js'
+import { TicketRepository } from '../repositories/ticket.repository.js'
 
 const eventRepository = new EventRepository()
+const ticketRepository = new TicketRepository()
 
 
 export function rolesPermission(roles) {
@@ -52,7 +53,8 @@ export async function eventPermission (req, res, next) {
 export async function cancelTicketPermission (req, res, next) {
     try {
         if (req.user.role == 'user') {
-            const ticket = await ticketModel.findById(req.params.ticketId);
+            //const ticket = await ticketModel.findById(req.params.ticketId);
+            const ticket = await ticketRepository.getTicketById(req.params.ticketId);
             if (ticket.user.equals(req.user.id)) next()
             else throw new Error ("Solo puedes cancelar tus propios tickets");
         } else if (req.user.role == 'admin') next();

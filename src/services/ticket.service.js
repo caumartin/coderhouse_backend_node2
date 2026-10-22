@@ -1,13 +1,16 @@
-import { ticketModel } from '../models/ticket.model.js';
-import { eventModel } from '../models/event.model.js';
+//import { ticketModel } from '../models/ticket.model.js';
+//import { eventModel } from '../models/event.model.js';
 import { sendTicketConfirmationEmail } from './mailing.service.js';
+import { EventRepository } from '../repositories/event.repository.js'
+import { TicketRepository } from '../repositories/ticket.repository.js'
+
+const eventRepository = new EventRepository()
+const ticketRepository = new TicketRepository()
 
 
 export async function getMyTicketsService (userId) {
     try {
-        const allTickets = await ticketModel.find({ user: userId })
-            .populate('event', 'name description date location')
-            .populate('user', 'first_name last_name email');
+        const allTickets = await ticketRepository.getTicketsByUser(userId);
         if (allTickets.length === 0) {
             throw new Error('No se encontraron tickets');
         }
