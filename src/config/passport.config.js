@@ -5,6 +5,7 @@ import { Strategy as JwtStrategy } from "passport-jwt";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
 import { env } from "../config/env.js"
 import { UserRepository } from '../repositories/user.repository.js'
+import { RegisterUserDTO, SessionUserDataDTO } from "../dto/user.dto.js";
 
 const userRepository = new UserRepository();
 
@@ -25,40 +26,42 @@ passport.use(
     },
     async (req, email, password, done) => {
       try {
-        const { first_name, last_name } = req.body
+        //const { first_name, last_name } = req.body
 
-        if (!first_name || !last_name || !email || !password) {
-          return done(null, false, { message: 'Todos los campos son obligatorios' })
-        }
+        //if (!first_name || !last_name || !email || !password) {
+        //  return done(null, false, { message: 'Todos los campos son obligatorios' })
+        //}
 
-        const normalizedEmail = email.toLowerCase().trim()
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(normalizedEmail)) {
-            return done(null, false, { message: 'Formato de correo electrónico inválido' });
-        }
+        //const normalizedEmail = email.toLowerCase().trim()
+        //const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        //if (!emailRegex.test(normalizedEmail)) {
+        //    return done(null, false, { message: 'Formato de correo electrónico inválido' });
+        //}
+        const userData = new RegisterUserDTO(req.body)
 
         //const userExists = await userModel.findOne({ email: normalizedEmail })
-        const userExists = await userRepository.getUserByEmail(normalizedEmail);
+        const userExists = await userRepository.getUserByEmail(userData.email);
 
         if (userExists) {
-          return done(null, false, { message: 'Ya existe un usuario registrado con ese email' })
+          return done(new Error('Ya existe un usuario registrado con ese email'), false, { message: 'Ya existe un usuario registrado con ese email' })
         }
 
-        if (password.length < 6) {
-            return done(null, false, { message: 'La contraseña debe tener al menos 6 caracteres' });
-        }
-        const hashedPassword = await hashPassword(password)
+        //if (password.length < 6) {
+        //    return done(null, false, { message: 'La contraseña debe tener al menos 6 caracteres' });
+        //}
+        const hashedPassword = await hashPassword(userData.password)
 
         //const newUser = await userModel.create({
-        const newUser = await userRepository.createUser({
-          first_name,
-          last_name,
-          email: normalizedEmail,
-          password: hashedPassword,
-          role: 'user'
-        })
+        //const newUser = await userRepository.createUser({
+        //  first_name,
+        //  last_name,
+        //  email: normalizedEmail,
+        //  password: hashedPassword,
+        //  role: 'user'
+        //})
+        const newUser = await userRepository.createUser( {...userData, password: hashedPassword} );
 
-        return done(null, newUser)
+        return done(null, new SessionUserDataDTO(newUser))
       } catch (error) {
         return done(error)
       }
