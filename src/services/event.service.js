@@ -236,7 +236,7 @@ export async function patchEventService (id, eventData) {
         } else {
             //const event = await eventModel.findById(id);
             const event = await eventRepository.getEventById(id);
-            console.log(event)
+
             if (!event) {
                 throw new Error('Evento no encontrado');
             }
