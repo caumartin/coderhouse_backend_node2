@@ -1,94 +1,24 @@
-//import { eventModel } from '../models/event.model.js';
+import { SearchEventDataDTO } from '../dto/event.dto.js'
 import { EventRepository } from '../repositories/event.repository.js'
 
 const eventRepository = new EventRepository()
 
 export async function getAllEventsService (user, query) {
 
-    const {
-        category,
-        status,
-        location,
-        fromDate,
-        toDate,
-        search,
-        page = 1,
-        limit = 10,
-        sort = 'date'
-    } = query
-
-    const filter = {}
-
-    if (category) {
-        filter.category = category
-    }
-    if (status) {
-        filter.status = status
-    }
-    if (location) {
-        filter.location = {
-        $regex: location,
-        $options: 'i'
-        }
-    }
-    if (fromDate || toDate) {
-        filter.date = {}
-        if (fromDate) {
-        filter.date.$gte = new Date(fromDate)
-        }
-        if (toDate) {
-        filter.date.$lte = new Date(toDate)
-        }
-    }
-    if (search) {
-        filter.$or = [
-        {
-            name: {
-            $regex: search,
-            $options: 'i'
-            }
-        },
-        {
-            description: {
-            $regex: search,
-            $options: 'i'
-            }
-        }
-        ]
-    }
-
-    if (user.role === 'user') {
-        filter.status = ['published', 'finished'];
-    }
-
-    const pageNumber = Number(page)
-    const limitNumber = Number(limit)
-    const skip = (pageNumber - 1) * limitNumber
-
-    const options = {
-        'limitNumber': limitNumber,
-        'skip': skip,
-        'sort': sort
-    }
+    const params = new SearchEventDataDTO(user, query);
 
     let events = []
     let totalEvents = 0
 
     try {
-//        events = await eventModel
-//            .find(filter)
-//            .populate('organizer', 'first_name last_name email')
-//            .sort(sort)
-//            .skip(skip)
-//            .limit(limitNumber)
 
-        events = await eventRepository.getEventsByFilters(filter, options)
+        events = await eventRepository.getEventsByFilters(params.filter, params.options)
 
         if (events.length === 0) {
             throw new Error('No se encontraron eventos con los filtros proporcionados');
         }
 
-        totalEvents = await eventRepository.countEvents(filter)
+        totalEvents = await eventRepository.countEvents(params.filter)
     } catch (error) {
         throw new Error("Error al obtener los eventos: " + error.message);
     }
@@ -97,9 +27,9 @@ export async function getAllEventsService (user, query) {
         events: events,
         pagination: {
             total: totalEvents,
-            page: pageNumber,
-            limit: limitNumber,
-            totalPages: Math.ceil(totalEvents / limitNumber)
+            page: params.options.pageNumber,
+            limit: params.options.limitNumber,
+            totalPages: Math.ceil(totalEvents / params.options.limitNumber)
         }
     }
 }
@@ -107,7 +37,6 @@ export async function getAllEventsService (user, query) {
 export async function getEventByIdService (user, id) {
 
     try {
-        //const event = await eventModel.findById(id).populate("organizer", "first_name last_name email");
         const event = await eventRepository.getEventById(id)
         if (!event) {
             throw new Error('Evento no encontrado');

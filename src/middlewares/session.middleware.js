@@ -1,11 +1,8 @@
-//import { eventModel } from "../models/event.model.js";
-//import { ticketModel } from "../models/ticket.model.js";
 import { EventRepository } from '../repositories/event.repository.js'
 import { TicketRepository } from '../repositories/ticket.repository.js'
 
 const eventRepository = new EventRepository()
 const ticketRepository = new TicketRepository()
-
 
 export function rolesPermission(roles) {
     return function (req, res, next) {
@@ -23,7 +20,6 @@ export async function purchasePermission (req, res, next) {
         if (req.user.role == 'user') next();
 
         if (req.user.role == 'admin' || req.user.role == 'organizer') {
-            //const event = await eventModel.findById(req.params.eid)
             const event = await eventRepository.getEventById(req.params.eid)
             if (event.organizer == req.user.id){
                 throw new Error ("No puedes comprar un ticket de tu evento");
@@ -37,7 +33,6 @@ export async function purchasePermission (req, res, next) {
 export async function eventPermission (req, res, next) {
     try {
         if (req.user.role == 'organizer') {
-            //const event = await eventModel.findById(req.params.eventId);
             const event = await eventRepository.getEventById(req.params.eventId);
             if (event.organizer.equals(req.user.id)) next()
             else throw new Error ("Solo puedes modificar tus propios eventos");
@@ -53,7 +48,6 @@ export async function eventPermission (req, res, next) {
 export async function cancelTicketPermission (req, res, next) {
     try {
         if (req.user.role == 'user') {
-            //const ticket = await ticketModel.findById(req.params.ticketId);
             const ticket = await ticketRepository.getTicketById(req.params.ticketId);
             if (ticket.user.equals(req.user.id)) next()
             else throw new Error ("Solo puedes cancelar tus propios tickets");

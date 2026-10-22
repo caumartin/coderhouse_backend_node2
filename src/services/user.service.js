@@ -1,16 +1,14 @@
-//import { userModel } from '../models/user.model.js';
 import { UserRepository } from '../repositories/user.repository.js'
+import { SessionUserDataDTO } from "../dto/user.dto.js";
 
 const userRepository = new UserRepository();
 
 export async function getAllUsersService () {
     try {
-        //const allUsers = await userModel.find();
         const allUsers = await userRepository.getAllUsers();
         const usersResponse = [];
         for (const user of allUsers) {
-            const userResponse = user.toObject();
-            delete userResponse.password; // Eliminar la contraseña de la respuesta
+            userResponse = new SessionUserDataDTO(user);
             usersResponse.push(userResponse);
         }
         return usersResponse;
