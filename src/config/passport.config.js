@@ -1,11 +1,10 @@
-import passport from "passport";
+import { env } from "../config/env.js"
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy } from "passport-jwt";
-//import { userModel } from "../models/user.model.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
-import { env } from "../config/env.js"
 import { UserRepository } from '../repositories/user.repository.js'
-import { RegisterUserDTO, SessionUserDataDTO } from "../dto/user.dto.js";
+import { LoginUserDTO, RegisterUserDTO, SessionUserDataDTO } from "../dto/user.dto.js";
+import passport from "passport";
 
 const userRepository = new UserRepository();
 
@@ -26,39 +25,17 @@ passport.use(
     },
     async (req, email, password, done) => {
       try {
-        //const { first_name, last_name } = req.body
 
-        //if (!first_name || !last_name || !email || !password) {
-        //  return done(null, false, { message: 'Todos los campos son obligatorios' })
-        //}
-
-        //const normalizedEmail = email.toLowerCase().trim()
-        //const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        //if (!emailRegex.test(normalizedEmail)) {
-        //    return done(null, false, { message: 'Formato de correo electrónico inválido' });
-        //}
         const userData = new RegisterUserDTO(req.body)
 
-        //const userExists = await userModel.findOne({ email: normalizedEmail })
         const userExists = await userRepository.getUserByEmail(userData.email);
 
         if (userExists) {
           return done(new Error('Ya existe un usuario registrado con ese email'), false, { message: 'Ya existe un usuario registrado con ese email' })
         }
 
-        //if (password.length < 6) {
-        //    return done(null, false, { message: 'La contraseña debe tener al menos 6 caracteres' });
-        //}
         const hashedPassword = await hashPassword(userData.password)
 
-        //const newUser = await userModel.create({
-        //const newUser = await userRepository.createUser({
-        //  first_name,
-        //  last_name,
-        //  email: normalizedEmail,
-        //  password: hashedPassword,
-        //  role: 'user'
-        //})
         const newUser = await userRepository.createUser( {...userData, password: hashedPassword} );
 
         return done(null, new SessionUserDataDTO(newUser))
@@ -73,27 +50,27 @@ passport.use(
   'login',
   new LocalStrategy(
     {
-      usernameField: 'email'
+      usernameField: 'email',
+      passReqToCallback: true
     },
-    async (email, password, done) => {
+    async (req, email, password, done) => {
            
  try {
-        const normalizedEmail = email.toLowerCase().trim()
+        const userData = new LoginUserDTO(req.body)
 
-        //const user = await userModel.findOne({ email: normalizedEmail })
-        const user = await userRepository.getUserByEmail(normalizedEmail);
-               
+        const user = await userRepository.getUserByEmail(userData.email);
+
    if (!user) {
-          return done(null, false, { message: 'Credenciales inválidas' })
+          return done(new Error ('Credenciales inválidas'), false, { message: 'Credenciales inválidas' })
         }
 
-        const validPassword = await verifyPassword(password, user.password);
+        const validPassword = await verifyPassword(userData.password, user.password);
               
    if (!validPassword) {
-          return done(null, false, { message: 'Credenciales inválidas' })
+          return done(new Error ('Credenciales inválidas'), false, { message: 'Credenciales inválidas' })
         }
 
-    return done(null, user)
+    return done(null, new SessionUserDataDTO(user))
           
 } catch (error) {
         return done(error)
@@ -111,7 +88,6 @@ passport.use(
     },
     async (jwtPayload, done) => {
       try {
-        //const user = await userModel.findById(jwtPayload.id)
         const user = await userRepository.getUserById(jwtPayload.id)
 
         if (!user) {
@@ -120,7 +96,7 @@ passport.use(
           })
         }
 
-        return done(null, user)
+        return done(null, new SessionUserDataDTO(user))
       } catch (error) {
         return done(error)
       }

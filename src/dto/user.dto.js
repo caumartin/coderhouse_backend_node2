@@ -25,6 +25,29 @@ export class RegisterUserDTO{
     }
 }
 
+export class LoginUserDTO{
+
+    constructor(userData){
+        const { email, password } = userData
+
+        if (!email || !password) {
+            throw new Error ('Faltan campos obligatorios')
+        }
+
+        const normalizedEmail = email.toLowerCase().trim()
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(normalizedEmail)) {
+            throw new Error ('Formato de correo electrónico inválido')
+        }
+
+        return {
+            ...userData,
+            email: normalizedEmail,
+        };
+    }
+}
+
+
 export class SessionUserDataDTO{
 
     constructor(userData){
