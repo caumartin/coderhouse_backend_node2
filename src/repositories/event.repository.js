@@ -22,4 +22,8 @@ export class EventRepository {
   async updateEvent(id, data) {
     return eventDAO.update(id, data)
   }
+
+  async changeEventStatus(id, status) {
+    return eventDAO.update(id, { status })
+  }
 }

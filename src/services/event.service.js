@@ -236,6 +236,7 @@ export async function patchEventService (id, eventData) {
         } else {
             //const event = await eventModel.findById(id);
             const event = await eventRepository.getEventById(id);
+            console.log(event)
             if (!event) {
                 throw new Error('Evento no encontrado');
             }
@@ -259,7 +260,7 @@ export async function patchEventService (id, eventData) {
 
     try {
         //const updatedEvent = await eventModel.findByIdAndUpdate(id, { status: eventData.status }, { returnDocument: 'after' });
-        const updatedEvent = await eventRepository.updateEvent(id, eventData);
+        const updatedEvent = await eventRepository.changeEventStatus(id, eventData.status);
         if (!updatedEvent) {
             throw new Error('Evento no encontrado');
         }

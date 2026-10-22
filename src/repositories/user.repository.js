@@ -3,6 +3,11 @@ import { UserDAO } from '../dao/user.dao.js'
 const userDAO = new UserDAO()
 
 export class UserRepository {
+
+  async getUserById(id) {
+    return userDAO.findById(id)
+  }
+
   async getUserByEmail(email) {
     return userDAO.getByEmail(email)
   }

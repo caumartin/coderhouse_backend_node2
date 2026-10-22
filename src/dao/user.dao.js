@@ -2,7 +2,11 @@ import { userModel } from '../models/user.model.js'
 
 
 export class UserDAO {
-   
+
+  async findById(id) {
+    return userModel.findById(id)
+ }
+
   async getByEmail(email) {
     return userModel.findOne({ email })
  }

@@ -1,8 +1,12 @@
-import { userModel } from '../models/user.model.js';
+//import { userModel } from '../models/user.model.js';
+import { UserRepository } from '../repositories/user.repository.js'
+
+const userRepository = new UserRepository();
 
 export async function getAllUsersService () {
     try {
-        const allUsers = await userModel.find();
+        //const allUsers = await userModel.find();
+        const allUsers = await userRepository.getAllUsers();
         const usersResponse = [];
         for (const user of allUsers) {
             const userResponse = user.toObject();
@@ -18,7 +22,8 @@ export async function getAllUsersService () {
 
 export async function getUserByEmailService (email) {
     try {
-        const user = await userModel.findOne({ email });
+        //const user = await userModel.findOne({ email });
+        const user = await userRepository.getUserByEmail(email);
         if (!user) {
             throw new Error('Usuario no encontrado');
         }
@@ -33,7 +38,8 @@ export async function getUserByEmailService (email) {
 
 export async function updateUserService (email, userData) {
     try {
-        const updatedUser = await userModel.findOneAndUpdate({ email }, userData, { returnDocument: 'after' });
+        //const updatedUser = await userModel.findOneAndUpdate({ email }, userData, { returnDocument: 'after' });
+        const updatedUser = await userRepository.updateUser(email, userData)
         if (!updatedUser) {
             throw new Error('Usuario no encontrado');
         }

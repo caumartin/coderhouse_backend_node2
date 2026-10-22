@@ -1,10 +1,12 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy } from "passport-jwt";
-import { userModel } from "../models/user.model.js";
+//import { userModel } from "../models/user.model.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
 import { env } from "../config/env.js"
+import { UserRepository } from '../repositories/user.repository.js'
 
+const userRepository = new UserRepository();
 
 const cookieExtractor = req => {
   let token = null
@@ -35,7 +37,8 @@ passport.use(
             return done(null, false, { message: 'Formato de correo electrónico inválido' });
         }
 
-        const userExists = await userModel.findOne({ email: normalizedEmail })
+        //const userExists = await userModel.findOne({ email: normalizedEmail })
+        const userExists = await userRepository.getUserByEmail(normalizedEmail);
 
         if (userExists) {
           return done(null, false, { message: 'Ya existe un usuario registrado con ese email' })
@@ -46,7 +49,8 @@ passport.use(
         }
         const hashedPassword = await hashPassword(password)
 
-        const newUser = await userModel.create({
+        //const newUser = await userModel.create({
+        const newUser = await userRepository.createUser({
           first_name,
           last_name,
           email: normalizedEmail,
@@ -73,7 +77,8 @@ passport.use(
  try {
         const normalizedEmail = email.toLowerCase().trim()
 
-        const user = await userModel.findOne({ email: normalizedEmail })
+        //const user = await userModel.findOne({ email: normalizedEmail })
+        const user = await userRepository.getUserByEmail(normalizedEmail);
                
    if (!user) {
           return done(null, false, { message: 'Credenciales inválidas' })
@@ -103,7 +108,8 @@ passport.use(
     },
     async (jwtPayload, done) => {
       try {
-        const user = await userModel.findById(jwtPayload.id)
+        //const user = await userModel.findById(jwtPayload.id)
+        const user = await userRepository.getUserById(jwtPayload.id)
 
         if (!user) {
           return done(null, false, {
