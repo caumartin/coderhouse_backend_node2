@@ -1,4 +1,4 @@
-import { SearchEventDataDTO } from '../dto/event.dto.js'
+import { CreateEventDataDTO, EventDataDTO, PatchEventDataDTO, SearchEventDataDTO, UpdateEventDataDTO } from '../dto/event.dto.js'
 import { EventRepository } from '../repositories/event.repository.js'
 
 const eventRepository = new EventRepository()
@@ -53,7 +53,7 @@ export async function getEventByIdService (user, id) {
 
 export async function createEventService (eventData) {
 
-    if (!eventData.name) {
+/*     if (!eventData.name) {
         throw new Error('El nombre del evento es requerido');
     }
     if (!eventData.description) {
@@ -92,11 +92,12 @@ export async function createEventService (eventData) {
     if (eventData.status && eventData.status !== 'draft') {
         throw new Error('El estado del evento debe ser "draft" al momento de la creación');
     }
-
+ */
+    const event = new CreateEventDataDTO(eventData)
+    
     try {
-        //const newEvent = await eventModel.create(eventData);
-        const newEvent = await eventRepository.createEvent(eventData);
-        return newEvent;
+        const newEvent = await eventRepository.createEvent(event);
+        return new EventDataDTO(newEvent);
     }
     catch (error) {
         throw new Error("Error al crear el evento: " + error.message);
@@ -105,10 +106,18 @@ export async function createEventService (eventData) {
 
 export async function updateEventService (id, eventData) {
 
-    //const event = await eventModel.findById(id);
     const event = await eventRepository.getEventById(id);
-    if (!event) {
+
+     if (!event) {
         throw new Error('Evento no encontrado');
+    }
+
+/*    if (event.status !== 'draft') {
+        throw new Error('Solo se pueden modificar eventos en estado "draft"');
+    }
+
+    if (eventData.status && eventData.status !== event.status) {
+        throw new Error('No se puede modificar el estado del evento con este endpoint, use PATCH /events/:eventId/status para cambiar el estado');
     }
 
     if (eventData.name) {
@@ -119,9 +128,6 @@ export async function updateEventService (id, eventData) {
         throw new Error('No se puede modificar el organizador del evento');
     }
 
-    if (event.status !== 'draft') {
-        throw new Error('Solo se pueden modificar eventos en estado "draft"');
-    }
 
     if (eventData.status && eventData.status !== event.status) {
         throw new Error('No se puede modificar el estado del evento con este endpoint, use PATCH /events/:eventId/status para cambiar el estado');
@@ -143,14 +149,15 @@ export async function updateEventService (id, eventData) {
     if (eventData.price && eventData.price < 0) {
         throw new Error('El precio del evento no puede ser negativo');
     }
+ */
+    const updateEvent = new UpdateEventDataDTO(event, eventData);
 
     try {
-        //const updatedEvent = await eventModel.findByIdAndUpdate(id, eventData, { returnDocument: 'after' });
-        const updatedEvent = await eventRepository.updateEvent(id, eventData);
+        const updatedEvent = await eventRepository.updateEvent(id, updateEvent);
         if (!updatedEvent) {
             throw new Error('Evento no encontrado');
         }
-        return updatedEvent;
+        return new EventDataDTO(updatedEvent);
     }
     catch (error) {
         throw new Error("Error al actualizar el evento: " + error.message);
@@ -158,6 +165,8 @@ export async function updateEventService (id, eventData) {
 }
 
 export async function patchEventService (id, eventData) {
+
+    let patchEvent;
 
     if (eventData.status) {
         if (!['draft', 'published', 'cancelled', 'finished'].includes(eventData.status)) {
@@ -169,27 +178,15 @@ export async function patchEventService (id, eventData) {
             if (!event) {
                 throw new Error('Evento no encontrado');
             }
-            if (event.status === 'cancelled' && eventData.status !== 'cancelled') {
-                throw new Error('No se puede cambiar el estado de un evento cancelado a otro estado');
-            }
-            if (event.status === 'finished' && eventData.status !== 'finished') {
-                throw new Error('No se puede cambiar el estado de un evento finalizado a otro estado');
-            }
 
-            if (event.status === 'draft' && eventData.status === 'finished') {
-                throw new Error('No se puede cambiar el estado de un evento en borrador a finalizado');
-            }
-            if (event.status === 'published' && eventData.status === 'draft') {
-                throw new Error('No se puede cambiar el estado de un evento publicado a borrador');
-            }
+            patchEvent = new PatchEventDataDTO(event, eventData);
         }
     } else {
         throw new Error('Este endpoint requiere que se especifique el nuevo estado del evento');
     }
 
     try {
-        //const updatedEvent = await eventModel.findByIdAndUpdate(id, { status: eventData.status }, { returnDocument: 'after' });
-        const updatedEvent = await eventRepository.changeEventStatus(id, eventData.status);
+        const updatedEvent = await eventRepository.changeEventStatus(id, patchEvent.status);
         if (!updatedEvent) {
             throw new Error('Evento no encontrado');
         }
