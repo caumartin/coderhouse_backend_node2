@@ -1,5 +1,20 @@
 # PROYECTO BACKEND EVENTOS #
 
+## PreEntrega 8 - DAO, Repository, DTO (commit v1.48) ##
+
+Capas desplegadas:
+
+- routes: se definen los endpoints y se llama a los middelwares de autenticación y autorización 
+- controllers: desempaquetan los datos de las consultas (params, body), llaman a los services y generan las respuestas (incluyendo manejo de errores). 
+- services: preparan las consultas a db  y validan las respuestas
+- repositories: se encuentran entre los services y los DAO, le dan sentido de negocio a las operaciones del DAO (ej: buscar ticket por Id) 
+- DAO: Data Access Object, implementan métodos de interacción directa con la db, independientes del negocio (buscar, modificar, crear)
+- DTO: Data Transfer Object, nos permite controlar los formatos de entrada y salida
+- models: schemas de las distintas entidades
+- utils: utilidades (hasheo de passwords, jwt, etc)
+- config: archivos de configuración (variables de entorno, conexión a db, etc)
+
+
 ## PreEntrega 7 - Entidad TICKET, reglas de negocio (commit v1.33) ##
 
 | Metodo | Ruta	| Acceso |  
