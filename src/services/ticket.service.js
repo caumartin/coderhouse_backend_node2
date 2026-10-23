@@ -1,20 +1,24 @@
-//import { ticketModel } from '../models/ticket.model.js';
-//import { eventModel } from '../models/event.model.js';
 import { sendTicketConfirmationEmail } from './mailing.service.js';
 import { EventRepository } from '../repositories/event.repository.js'
 import { TicketRepository } from '../repositories/ticket.repository.js'
+import { GetUserTicketDataDTO, GetOrganizerTicketDataDTO } from '../dto/ticket.dto.js';
+
 
 const eventRepository = new EventRepository()
 const ticketRepository = new TicketRepository()
 
-
 export async function getMyTicketsService (userId) {
+
+    let dtos = []
+
     try {
         const allTickets = await ticketRepository.getTicketsByUser(userId);
         if (allTickets.length === 0) {
             throw new Error('No se encontraron tickets');
         }
-        return allTickets;
+        dtos = allTickets.map(ticket => new GetUserTicketDataDTO(ticket));
+
+        return dtos;
     }
     catch (error) {
         throw error;
@@ -22,14 +26,18 @@ export async function getMyTicketsService (userId) {
 }
 
 export async function getTicketsByEventService (eventId) {
+
+    let dtos = []
+
     try {
-        //const tickets = await ticketModel.find({ event: eventId })
         const tickets = await ticketRepository.getTicketsByEvent(eventId);
 
         if (tickets.length === 0) {
             throw new Error('No se encontraron tickets para el evento especificado');
         }
-        return tickets;
+        dtos = tickets.map(ticket => new GetOrganizerTicketDataDTO(ticket));
+
+        return dtos
     }
     catch (error) {
         throw error;
@@ -38,7 +46,6 @@ export async function getTicketsByEventService (eventId) {
 
 export async function cancelTicketService (ticketId) {
     try {
-        //const ticket = await ticketModel.findById(ticketId);
         const ticket = await ticketRepository.getTicketById(ticketId);
         if (!ticket) {
             throw new Error('Ticket no encontrado');
@@ -48,13 +55,12 @@ export async function cancelTicketService (ticketId) {
             throw new Error('El ticket ya ha sido cancelado previamente');
         }
 
-        //const cancelledTicket = await ticketModel.findByIdAndUpdate(ticketId, { status: 'cancelled', cancelledAt: new Date() }, { returnDocument: 'after' })
         const cancelledTicket = await ticketRepository.cancelTicket(ticketId);
         if (!cancelledTicket) {
             throw new Error('Ticket no encontrado');
         }
 
-        return cancelledTicket;
+        return new GetUserTicketDataDTO(cancelledTicket);
     }
     catch (error) {
         throw error;
@@ -63,7 +69,6 @@ export async function cancelTicketService (ticketId) {
 
 export async function purchaseTicketService (user, eventId, quantity) {
     try {
-        //const eventExists = await eventModel.findById(eventId);
         const eventExists = await eventRepository.getEventById(eventId);
         if (!eventExists) {
             throw new Error('Evento no encontrado');
@@ -115,7 +120,7 @@ export async function purchaseTicketService (user, eventId, quantity) {
             console.error('Error al enviar el correo de confirmación:', emailError);
         }
 
-        return newTicket;
+        return new GetUserTicketDataDTO(newTicket);
     }
     catch (error) {
         throw error;

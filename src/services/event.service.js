@@ -1,4 +1,4 @@
-import { CreateEventDataDTO, EventDataDTO, PatchEventDataDTO, SearchEventDataDTO, UpdateEventDataDTO } from '../dto/event.dto.js'
+import { CreateEventDataDTO, GetEventDataDTO, PatchEventDataDTO, SearchEventDataDTO, UpdateEventDataDTO } from '../dto/event.dto.js'
 import { EventRepository } from '../repositories/event.repository.js'
 
 const eventRepository = new EventRepository()
@@ -7,24 +7,24 @@ export async function getAllEventsService (user, query) {
 
     const params = new SearchEventDataDTO(user, query);
 
-    let events = []
+    let dtos = []
     let totalEvents = 0
 
     try {
 
-        events = await eventRepository.getEventsByFilters(params.filter, params.options)
+        const events = await eventRepository.getEventsByFilters(params.filter, params.options)
 
         if (events.length === 0) {
             throw new Error('No se encontraron eventos con los filtros proporcionados');
         }
-
+        dtos = events.map(event => new GetEventDataDTO(event));
         totalEvents = await eventRepository.countEvents(params.filter)
     } catch (error) {
         throw new Error("Error al obtener los eventos: " + error.message);
     }
 
     return {
-        events: events,
+        events: dtos,
         pagination: {
             total: totalEvents,
             page: params.options.pageNumber,
@@ -44,7 +44,7 @@ export async function getEventByIdService (user, id) {
         if (user.role === 'user' && event.status !== 'published' && event.status !== 'finished') {
             throw new Error('No tienes permiso para ver este evento');
         }
-        return event;
+        return new GetEventDataDTO(event);
     }
     catch (error) {
         throw new Error("Error al obtener el evento: " + error.message);
@@ -53,51 +53,11 @@ export async function getEventByIdService (user, id) {
 
 export async function createEventService (eventData) {
 
-/*     if (!eventData.name) {
-        throw new Error('El nombre del evento es requerido');
-    }
-    if (!eventData.description) {
-        throw new Error('La descripción del evento es requerida');
-    }
-    if (!eventData.category) {
-        throw new Error('La categoría del evento es requerida');
-    }
-    if (eventData.date) {
-        const eventDate = new Date(eventData.date);
-        const currentDate = new Date();
-
-        if (eventDate <= currentDate) {
-            throw new Error('La fecha del evento debe ser futura');
-        }
-    } else {
-        throw new Error('La fecha del evento es requerida');
-    }
-    if (!eventData.location) {
-        throw new Error('La ubicación del evento es requerida');
-    }
-    if (eventData.capacity) {
-        if (eventData.capacity <= 0) {
-            throw new Error('La capacidad del evento debe ser mayor a cero');
-        }
-    } else {
-        throw new Error('La capacidad del evento es requerida');
-    }
-    if (eventData.price) {
-        if (!(typeof eventData.price === "number" && eventData.price >= 0)) {
-            throw new Error('El precio del evento debe ser un número válido y no negativo');
-        }
-    } else {
-        throw new Error('El precio del evento es requerido');
-    }
-    if (eventData.status && eventData.status !== 'draft') {
-        throw new Error('El estado del evento debe ser "draft" al momento de la creación');
-    }
- */
     const event = new CreateEventDataDTO(eventData)
     
     try {
         const newEvent = await eventRepository.createEvent(event);
-        return new EventDataDTO(newEvent);
+        return new GetEventDataDTO(newEvent);
     }
     catch (error) {
         throw new Error("Error al crear el evento: " + error.message);
@@ -112,44 +72,6 @@ export async function updateEventService (id, eventData) {
         throw new Error('Evento no encontrado');
     }
 
-/*    if (event.status !== 'draft') {
-        throw new Error('Solo se pueden modificar eventos en estado "draft"');
-    }
-
-    if (eventData.status && eventData.status !== event.status) {
-        throw new Error('No se puede modificar el estado del evento con este endpoint, use PATCH /events/:eventId/status para cambiar el estado');
-    }
-
-    if (eventData.name) {
-        throw new Error('No se puede modificar el nombre del evento');
-    }
-
-    if (eventData.organizer) {
-        throw new Error('No se puede modificar el organizador del evento');
-    }
-
-
-    if (eventData.status && eventData.status !== event.status) {
-        throw new Error('No se puede modificar el estado del evento con este endpoint, use PATCH /events/:eventId/status para cambiar el estado');
-        }
-
-    if (eventData.date) {
-        const eventDate = new Date(eventData.date);
-        const currentDate = new Date();
-
-        if (eventDate <= currentDate) {
-            throw new Error('La fecha del evento debe ser futura');
-        }
-    }
-    
-    if (eventData.capacity && eventData.capacity <= 0) {
-        throw new Error('La capacidad del evento debe ser mayor a cero');
-    }
-
-    if (eventData.price && eventData.price < 0) {
-        throw new Error('El precio del evento no puede ser negativo');
-    }
- */
     const updateEvent = new UpdateEventDataDTO(event, eventData);
 
     try {
@@ -157,7 +79,7 @@ export async function updateEventService (id, eventData) {
         if (!updatedEvent) {
             throw new Error('Evento no encontrado');
         }
-        return new EventDataDTO(updatedEvent);
+        return new GetEventDataDTO(updatedEvent);
     }
     catch (error) {
         throw new Error("Error al actualizar el evento: " + error.message);
@@ -172,7 +94,6 @@ export async function patchEventService (id, eventData) {
         if (!['draft', 'published', 'cancelled', 'finished'].includes(eventData.status)) {
             throw new Error('Estado inválido');
         } else {
-            //const event = await eventModel.findById(id);
             const event = await eventRepository.getEventById(id);
 
             if (!event) {
@@ -190,7 +111,7 @@ export async function patchEventService (id, eventData) {
         if (!updatedEvent) {
             throw new Error('Evento no encontrado');
         }
-        return updatedEvent;
+        return new GetEventDataDTO(updatedEvent);
     }
     catch (error) {
         throw new Error("Error al actualizar el evento: " + error.message);

@@ -16,7 +16,7 @@ export class RegisterUserDTO{
         if (password.length < 6) {
             throw new Error ('La contraseña debe tener al menos 6 caracteres')
         }
-        //this.userData = userData
+
         return {
             ...userData,
             email: normalizedEmail,

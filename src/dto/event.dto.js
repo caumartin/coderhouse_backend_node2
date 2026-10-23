@@ -1,11 +1,16 @@
-export class EventDataDTO{
+export class GetEventDataDTO{
 
     constructor(eventData){
-        delete eventData.__v;
-        delete eventData.createdAt;
-        delete eventData.updatedAt;
-
-        return eventData;
+        this.id = eventData._id
+        this.name = eventData.name
+        this.description = eventData.description
+        this.date = eventData.date
+        this.location = eventData.location
+        this.capacity = eventData.capacity
+        this.price = eventData.price
+        this.status = eventData.status
+        this.organizer = eventData.organizer.email
+        this.createdAt = eventData.createdAt
     }
 }
 
