@@ -24,7 +24,7 @@ export class GetOrganizerTicketDataDTO{
         this.code = ticketData.code
         this.quantity = ticketData.quantity
         this.purchaseDate = ticketData.createdAt
-        this.cancelDate = ticketData.cancelledAtS
+        this.cancelDate = ticketData.cancelledAt
         this.status = ticketData.status
     }
 }

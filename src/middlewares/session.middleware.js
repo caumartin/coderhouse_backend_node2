@@ -49,7 +49,7 @@ export async function cancelTicketPermission (req, res, next) {
     try {
         if (req.user.role == 'user') {
             const ticket = await ticketRepository.getTicketById(req.params.ticketId);
-            if (ticket.user.equals(req.user.id)) next()
+            if (ticket.user.equals(req.user._id)) next()
             else throw new Error ("Solo puedes cancelar tus propios tickets");
         } else if (req.user.role == 'admin') next();
             else {

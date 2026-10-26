@@ -51,8 +51,8 @@ export class LoginUserDTO{
 export class SessionUserDataDTO{
 
     constructor(userData){
-        delete userData.password;
-
-        return userData;
+        this._id = userData._id
+        this.email = userData.email
+        this.role = userData.role
     }
 }

@@ -5,7 +5,7 @@ import { getMyTicketsService,
 
 export async function getMyTicketsController (req, res, next) {
     try {
-        const myTickets = await getMyTicketsService(req.user.id);
+        const myTickets = await getMyTicketsService(req.user._id);
         res.status(200).json({
             status: 'success',
             message: 'Tickets obtenidos exitosamente',

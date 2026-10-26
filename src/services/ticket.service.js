@@ -88,12 +88,6 @@ export async function purchaseTicketService (user, eventId, quantity) {
             throw new Error('La cantidad de tickets a comprar debe ser mayor que cero');
         }
 
-        //const result = await ticketModel.aggregate([
-        //    { $match: { event: eventExists._id, status: 'active' } },
-        //    { $group: { _id: '$event', totalReserved: { $sum: '$quantity' } } }
-        //]);
-
-        //const reservedTickets = result.length > 0 ? result[0].totalReserved : 0;
         const reservedTickets = await ticketRepository.getReservedQuantity(eventExists._id);
         const availableTickets = event.capacity - reservedTickets;
 
@@ -113,7 +107,7 @@ export async function purchaseTicketService (user, eventId, quantity) {
             await sendTicketConfirmationEmail({
                 to: user.email,
                 userName: user.first_name,
-                eventTitle: event.title,
+                eventTitle: event.name,
                 ticketCode: code
             });
         } catch (emailError) {

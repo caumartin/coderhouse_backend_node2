@@ -57,6 +57,7 @@ export async function createEventService (eventData) {
     
     try {
         const newEvent = await eventRepository.createEvent(event);
+        await newEvent.populate('organizer')
         return new GetEventDataDTO(newEvent);
     }
     catch (error) {

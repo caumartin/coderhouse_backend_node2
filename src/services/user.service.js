@@ -5,10 +5,11 @@ const userRepository = new UserRepository();
 
 export async function getAllUsersService () {
     try {
+        
         const allUsers = await userRepository.getAllUsers();
         const usersResponse = [];
         for (const user of allUsers) {
-            userResponse = new SessionUserDataDTO(user);
+            const userResponse = new SessionUserDataDTO(user);
             usersResponse.push(userResponse);
         }
         return usersResponse;
@@ -20,7 +21,6 @@ export async function getAllUsersService () {
 
 export async function getUserByEmailService (email) {
     try {
-        //const user = await userModel.findOne({ email });
         const user = await userRepository.getUserByEmail(email);
         if (!user) {
             throw new Error('Usuario no encontrado');
