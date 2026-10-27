@@ -56,3 +56,14 @@ export class SessionUserDataDTO{
         this.role = userData.role
     }
 }
+
+export class ShowUserDataDTO{
+
+    constructor(userData){
+        this.id = userData._id
+        this.first_name = userData.first_name
+        this.last_name = userData.last_name
+        this.email = userData.email
+        this.role = userData.role
+    }
+}

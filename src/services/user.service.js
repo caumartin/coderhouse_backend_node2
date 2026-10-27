@@ -1,5 +1,5 @@
 import { UserRepository } from '../repositories/user.repository.js'
-import { SessionUserDataDTO } from "../dto/user.dto.js";
+import { SessionUserDataDTO, ShowUserDataDTO } from "../dto/user.dto.js";
 
 const userRepository = new UserRepository();
 
@@ -9,7 +9,7 @@ export async function getAllUsersService () {
         const allUsers = await userRepository.getAllUsers();
         const usersResponse = [];
         for (const user of allUsers) {
-            const userResponse = new SessionUserDataDTO(user);
+            const userResponse = new ShowUserDataDTO(user);
             usersResponse.push(userResponse);
         }
         return usersResponse;
@@ -25,9 +25,7 @@ export async function getUserByEmailService (email) {
         if (!user) {
             throw new Error('Usuario no encontrado');
         }
-        const userResponse = user.toObject();
-        delete userResponse.password; // Eliminar la contraseña de la respuesta
-        return userResponse;
+        return new ShowUserDataDTO(user)
     }
     catch (error) {
         throw error;
@@ -36,14 +34,12 @@ export async function getUserByEmailService (email) {
 
 export async function updateUserService (email, userData) {
     try {
-        //const updatedUser = await userModel.findOneAndUpdate({ email }, userData, { returnDocument: 'after' });
         const updatedUser = await userRepository.updateUser(email, userData)
         if (!updatedUser) {
             throw new Error('Usuario no encontrado');
         }
-        const userResponse = updatedUser.toObject();
-        delete userResponse.password; // Eliminar la contraseña de la respuesta
-        return userResponse;
+        
+        return new SessionUserDataDTO(updatedUser)
     }
     catch (error) {
         throw error;
