@@ -9,6 +9,8 @@ export class GetUserTicketDataDTO{
         this.code = ticketData.code
         this.quantity = ticketData.quantity
         this.purchaseDate = ticketData.createdAt
+        this.cancelDate = ticketData.cancelledAt
+        this.status = ticketData.status
     }
 }
 

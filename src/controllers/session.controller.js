@@ -7,7 +7,7 @@ export async function registerController (req, res) {
         status: 'success',
         message: 'Usuario registrado exitosamente',
         payload: {
-            id: req.user._id,
+            id: req.user.id,
             first_name: req.user.first_name,
             last_name: req.user.last_name,
             email: req.user.email,
@@ -19,7 +19,7 @@ export async function registerController (req, res) {
 
 export async function loginController (req, res, next) {
     const tokenUser = {
-        id: req.user._id,
+        id: req.user.id,
         email: req.user.email,
         role: req.user.role
     }
@@ -59,7 +59,7 @@ export async function currentUserController (req, res, next) {
     res.status(200).json({
         status: 'success',
         payload: {
-            id: req.user._id,
+            id: req.user.id,
             first_name: req.user.first_name,
             last_name: req.user.last_name,
             email: req.user.email,

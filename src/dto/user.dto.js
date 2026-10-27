@@ -51,7 +51,7 @@ export class LoginUserDTO{
 export class SessionUserDataDTO{
 
     constructor(userData){
-        this._id = userData._id
+        this.id = userData._id
         this.email = userData.email
         this.role = userData.role
     }
