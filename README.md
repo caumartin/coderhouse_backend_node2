@@ -1,6 +1,15 @@
 # PROYECTO BACKEND EVENTOS #
 
-## ENTREGA FINAL (commit v1.57) ##
+## ENTREGA FINAL (commit v1.58) ##
+
+Para instalar:
+
+- npm install
+
+Para correr: 
+
+- crear archivo .env dando valores reales a las variables enumeradas en .env.example
+- npm run start
 
 
 ## PreEntrega 8 - DAO, Repository, DTO (commit v1.48) ##
