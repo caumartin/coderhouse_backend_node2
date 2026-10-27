@@ -98,7 +98,7 @@ export async function purchaseTicketService (user, eventId, quantity) {
         const code = Math.random().toString(36).substring(2, 10).toUpperCase(); // Genera un código aleatorio de 8 caracteres
 
         const newTicket = await ticketRepository
-            .createTicket({ user: user.id, event: eventId, quantity: quantity, code: code })
+            .createTicket({ user: user._id, event: eventId, quantity: quantity, code: code })
 
         await newTicket.populate('user', 'first_name last_name email');
         await newTicket.populate('event', 'name description date location');
