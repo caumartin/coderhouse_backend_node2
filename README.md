@@ -1,5 +1,8 @@
 # PROYECTO BACKEND EVENTOS #
 
+## ENTREGA FINAL (commit v1.57) ##
+
+
 ## PreEntrega 8 - DAO, Repository, DTO (commit v1.48) ##
 
 Capas desplegadas:
