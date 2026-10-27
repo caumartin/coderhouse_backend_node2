@@ -55,7 +55,7 @@ export async function purchaseTicketController (req, res, next) {
     }
     catch (error) {
         if (error.message === 'Faltan datos para comprar el ticket' || error.message === 'Usuario no encontrado' || error.message === 'Evento no encontrado' || error.message === 'El evento no está activo') {
-            res.status(400).json({ status: 'error', message: 'Error en los datos proporcionados' });
+            res.status(400).json({ status: 'error', message: error.message });
         }
         else {
             res.status(500).json({ status: 'error', message: error.message });
