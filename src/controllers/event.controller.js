@@ -53,7 +53,7 @@ export async function getEventByIdController (req, res, next) {
 
 export async function createEventController (req, res, next) {
     try {
-        const event = await createEventService({...req.body, organizer: req.user});
+        const event = await createEventService({...req.body, organizer: req.user.id});
         res.status(201).json({
             status: 'success',
             message: 'Evento creado exitosamente',
