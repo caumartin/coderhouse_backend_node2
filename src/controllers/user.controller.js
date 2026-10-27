@@ -35,8 +35,15 @@ export async function getUserByEmailController (req, res, next) {
 export async function updateUserController (req, res, next) {
     try {
         const { email } = req.params;
-        const { role } = req.body;
-        const user = await updateUserService(email, { role });
+        let role
+
+        if (req.body.role && (req.body.role=="user" || req.body.role=="organizer")) {
+            role = req.body.role
+        } else {
+            throw new Error ("Se debe pasar un rol correcto")
+        }
+        
+        const user = await updateUserService(email, { role: role });
         res.status(200).json({
             status: 'success',
             message: 'Usuario actualizado exitosamente',
@@ -47,6 +54,6 @@ export async function updateUserController (req, res, next) {
         if (error.message === 'Usuario no encontrado') {
             res.status(404).json({ status: 'error', message: 'Usuario no encontrado' });
         }
-        else res.status(400).json({ status: 'error', message: 'Error al actualizar el usuario' })
+        else res.status(400).json({ status: 'error', message: error.message })
     }
 }
