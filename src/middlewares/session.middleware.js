@@ -21,7 +21,7 @@ export async function purchasePermission (req, res, next) {
 
         if (req.user.role == 'admin' || req.user.role == 'organizer') {
             const event = await eventRepository.getEventById(req.params.eid)
-            if (event.organizer == req.user.id){
+            if (event.organizer == req.user._id){
                 throw new Error ("No puedes comprar un ticket de tu evento");
             } else next();
         }
@@ -34,7 +34,7 @@ export async function eventPermission (req, res, next) {
     try {
         if (req.user.role == 'organizer') {
             const event = await eventRepository.getEventById(req.params.eventId);
-            if (event.organizer.equals(req.user.id)) next()
+            if (event.organizer.equals(req.user._id)) next()
             else throw new Error ("Solo puedes modificar tus propios eventos");
         } else if (req.user.role == 'admin') next();
             else {

@@ -77,7 +77,7 @@ export async function purchaseTicketService (user, eventId, quantity) {
         if (event.status !== "published") {
             throw new Error('El evento no está activo');
         }
-        const existingTicket = await ticketRepository.getActiveTicketByUserAndEvent(user.id, eventId);
+        const existingTicket = await ticketRepository.getActiveTicketByUserAndEvent(user._id, eventId);
         if (existingTicket) {
             throw new Error('El usuario ya tiene un ticket activo para este evento');
         }
